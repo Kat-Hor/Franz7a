@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<!--
+  Original author: Horlacher (7a)
+  Created: 2026-11-12
+  This material was created for Horlacher's own French class (7a).
+  Not authorized for redistribution under a different author's name.
+-->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Révision : 1re interro — 7a</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .plan{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin:0 0 22px; }
+  .plan .step{ background:#fff; border:3px solid var(--ink); border-radius:14px; padding:14px 16px; box-shadow:4px 4px 0 var(--ink); }
+  .plan .step b.n{ display:inline-block; font-family:'Bangers',cursive; font-weight:400; font-size:22px; width:34px; height:34px; line-height:30px; text-align:center; border:3px solid var(--ink); border-radius:50%; margin-right:8px; background:var(--gold); }
+  .plan .step:nth-child(2) b.n{ background:var(--teal-bg); }
+  .plan .step:nth-child(3) b.n{ background:var(--pink-bg); }
+  table.mini td.fr-cell{ font-family:'IBM Plex Mono',monospace; color:var(--ink); }
+  .verb-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; }
+  .ex{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:15px; background:var(--blue-bg); border-radius:8px; padding:2px 6px; }
+  /* ===== Mission Paris (Spiel) ===== */
+  .game{ position:relative; background:linear-gradient(160deg,#1B2A55 0%,#0B1633 100%); border:4px solid var(--ink); border-radius:22px; box-shadow:7px 7px 0 var(--ink); padding:22px; color:#fff; overflow:hidden; min-height:460px; }
+  .game::before{ content:""; position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.10) 1.5px, transparent 2px); background-size:18px 18px; pointer-events:none; }
+  .game > *{ position:relative; }
+  .g-screen{ text-align:center; }
+  .g-screen[hidden]{ display:none; }
+  .g-title{ font-family:'Bangers',cursive; font-size:clamp(40px,8vw,64px); letter-spacing:.04em; color:var(--gold); text-shadow:3px 3px 0 var(--rouge), 6px 6px 0 #000; margin:6px 0 2px; }
+  .g-sub{ font-family:'Bangers',cursive; letter-spacing:.08em; font-size:20px; color:#C9D6FF; margin-bottom:16px; }
+  .g-rules{ list-style:none; padding:0; margin:0 auto 18px; max-width:560px; text-align:left; }
+  .g-rules li{ background:rgba(255,255,255,.08); border:2px solid rgba(255,255,255,.25); border-radius:12px; padding:9px 12px; margin-bottom:8px; font-weight:700; font-size:16px; }
+  .g-ico{ display:inline-block; width:28px; }
+  .g-best{ font-family:'Bangers',cursive; letter-spacing:.06em; font-size:19px; color:var(--gold); margin:6px 0 14px; min-height:22px; }
+  .g-btn{ font-family:'Bangers',cursive; font-size:28px; letter-spacing:.06em; background:var(--gold); color:var(--ink); border:4px solid #000; border-radius:16px; padding:8px 34px; cursor:pointer; box-shadow:5px 5px 0 #000; transition:transform .1s, box-shadow .1s; }
+  .g-btn:hover{ transform:translate(-2px,-2px); box-shadow:7px 7px 0 #000; }
+  .g-btn:active{ transform:translate(3px,3px); box-shadow:1px 1px 0 #000; }
+  .g-btn.small{ font-size:22px; padding:5px 24px; }
+  .g-hud{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .g-lives{ font-size:26px; letter-spacing:2px; min-width:110px; }
+  .g-lives .lost{ filter:grayscale(1); opacity:.3; }
+  .g-combo{ flex:1; text-align:center; font-family:'Bangers',cursive; font-size:24px; letter-spacing:.06em; color:var(--orange); text-shadow:2px 2px 0 #000; }
+  .g-combo.hot{ animation:pulse .6s ease infinite alternate; }
+  @keyframes pulse{ from{transform:scale(1);} to{transform:scale(1.12);} }
+  .g-score{ font-family:'Bangers',cursive; font-size:32px; letter-spacing:.04em; background:#fff; color:var(--ink); border:3px solid #000; border-radius:12px; padding:0 14px; box-shadow:3px 3px 0 #000; }
+  .g-score small{ font-size:16px; }
+  .g-track{ display:flex; align-items:center; margin:4px 4px 18px; }
+  .g-st{ display:flex; flex-direction:column; align-items:center; font-size:12px; font-weight:700; color:#9FB0DD; width:58px; flex:none; }
+  .g-st .dot{ width:34px; height:34px; border-radius:50%; border:3px solid #9FB0DD; display:flex; align-items:center; justify-content:center; font-size:18px; background:#1B2A55; margin-bottom:3px; }
+  .g-st.done .dot{ background:var(--teal); border-color:#fff; }
+  .g-st.now .dot{ background:var(--gold); border-color:#fff; transform:scale(1.18); box-shadow:0 0 0 4px rgba(255,201,61,.35); }
+  .g-st.done, .g-st.now{ color:#fff; }
+  .g-line{ flex:1; height:6px; background:#3A4A7A; border-radius:3px; margin:0 2px 18px; overflow:hidden; }
+  .g-line i{ display:block; height:100%; width:0; background:var(--teal); transition:width .4s; }
+  .g-qcard{ background:#fff; color:var(--ink); border:4px solid #000; border-radius:18px; padding:18px 20px; box-shadow:5px 5px 0 #000; }
+  .g-qnum{ font-family:'Bangers',cursive; letter-spacing:.06em; font-size:17px; color:var(--ink-soft); }
+  .g-timer{ height:12px; background:#E7EBF7; border:2px solid var(--ink); border-radius:8px; overflow:hidden; margin:6px 0 14px; }
+  .g-timer-fill{ height:100%; width:100%; background:linear-gradient(90deg,var(--rouge),var(--gold),var(--teal)); background-size:300% 100%; background-position:100% 0; }
+  .g-q{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:clamp(17px,3.4vw,21px); margin-bottom:14px; line-height:1.4; }
+  .g-opts{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; }
+  .g-opt{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:17px; background:var(--blue-bg); color:var(--ink); border:3px solid var(--ink); border-radius:12px; padding:12px 10px; cursor:pointer; box-shadow:3px 3px 0 var(--ink); transition:transform .08s; }
+  .g-opt:hover:not(:disabled){ transform:translate(-1px,-1px); background:var(--gold-bg); }
+  .g-opt:disabled{ cursor:default; }
+  .g-opt.ok{ background:var(--teal); color:#fff; }
+  .g-opt.no{ background:var(--rouge); color:#fff; animation:shake .35s; }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+  .g-fb{ margin-top:14px; font-weight:700; font-size:16px; padding:10px 12px; border-radius:10px; border:2px solid var(--ink); }
+  .g-fb.ok{ background:var(--teal-bg); }
+  .g-fb.no{ background:var(--red-bg); }
+  .g-next-row{ text-align:right; margin-top:10px; min-height:4px; }
+  .g-pop{ position:absolute; left:50%; top:40%; transform:translate(-50%,-50%); font-family:'Bangers',cursive; font-size:44px; letter-spacing:.05em; color:var(--gold); text-shadow:3px 3px 0 #000; pointer-events:none; opacity:0; }
+  .g-pop.show{ animation:popup 1s ease forwards; }
+  @keyframes popup{ 0%{opacity:0; transform:translate(-50%,-30%) scale(.6);} 25%{opacity:1; transform:translate(-50%,-50%) scale(1.1);} 100%{opacity:0; transform:translate(-50%,-110%) scale(1);} }
+  .g-banner{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(11,22,51,.88); z-index:5; font-family:'Bangers',cursive; text-align:center; animation:pop .25s ease; }
+  .g-banner[hidden]{ display:none; }
+  .g-banner .lv{ font-size:24px; letter-spacing:.1em; color:#C9D6FF; }
+  .g-banner .city{ font-size:clamp(46px,10vw,76px); color:var(--gold); text-shadow:3px 3px 0 var(--rouge),6px 6px 0 #000; }
+  .g-banner .em{ font-size:56px; }
+  .g-rank{ font-family:'Bangers',cursive; font-size:30px; letter-spacing:.05em; color:#fff; margin-bottom:4px; }
+  .g-stars{ font-size:44px; letter-spacing:6px; margin-bottom:10px; }
+  .g-stars .off{ filter:grayscale(1); opacity:.3; }
+  .g-stats{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+  .g-stats div{ background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.3); border-radius:12px; padding:8px 14px; font-weight:700; }
+  .g-stats b{ display:block; font-family:'Bangers',cursive; font-size:28px; color:var(--gold); letter-spacing:.04em; font-weight:400; }
+  .g-tips{ background:#fff; color:var(--ink); border:3px solid #000; border-radius:14px; padding:12px 16px; margin:8px auto 18px; max-width:560px; text-align:left; font-weight:700; }
+  .g-tips:empty{ display:none; }
+  .g-tips a{ color:var(--bleu); text-decoration-color:var(--rouge); text-decoration-thickness:3px; }
+  .g-confetti{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:6; }
+  .g-confetti i{ position:absolute; top:-12px; width:10px; height:14px; border-radius:2px; animation:fall linear forwards; }
+  @keyframes fall{ to{ transform:translateY(560px) rotate(720deg); opacity:.8; } }
+  @media(max-width:560px){ .game{ padding:16px 12px; } .g-st{ width:44px; font-size:10px; } .g-st .dot{ width:28px; height:28px; font-size:15px; } .g-lives{ font-size:21px; min-width:84px; } .g-score{ font-size:26px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home-link" href="index.html">← Accueil</a>
+
+  <div class="hero">
+    <div class="bubble">Tu vas réussir !</div>
+    <div class="eyebrow">Révision · 1<sup>re</sup> interro</div>
+    <h1>Révision</h1>
+    <p>Bald schreibst du deine erste Interro. Hier kannst du wichtige Grammatik-Themen noch einmal in Ruhe üben. Fang mit dem Spickzettel an!</p>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="start">So geht's</button>
+    <button class="tab-btn" data-tab="spick">Spickzettel</button>
+    <button class="tab-btn" data-tab="uebung">Üben</button>
+    <button class="tab-btn" data-tab="probe">Mission Paris 🎮</button>
+  </nav>
+
+  <!-- ===================== START ===================== -->
+  <section class="panel active" id="start">
+    <h2 class="section-head">Dein Plan in 3 Schritten</h2>
+    <p class="section-lead">Du musst nicht alles auf einmal machen. Nimm dir jeden Tag ein Thema vor, das reicht.</p>
+
+    <div class="plan">
+      <div class="step"><b class="n">1</b><b>Spickzettel lesen.</b> Dort findest du die Grammatik dieser Seite kurz erklärt und mit Beispielen.</div>
+      <div class="step"><b class="n">2</b><b>Thema für Thema üben.</b> Fang mit dem Thema an, das dir am schwersten fällt. Du kannst jede Übung so oft wiederholen, wie du willst.</div>
+      <div class="step"><b class="n">3</b><b>Mission Paris spielen.</b> Hier kommen alle Themen dieser Seite gemischt, als Spiel mit Punkten und Highscore.</div>
+    </div>
+
+    <div class="card">
+      <h3>Diese Themen übst du hier</h3>
+      <ul class="rules-list">
+        <li><b>1.</b> Die Relativpronomen <b>qui, que, où</b></li>
+        <li><b>2.</b> Die Verben <b>écrire, lire, partager, vouloir, pouvoir, prendre</b></li>
+        <li><b>3.</b> Die Adjektive <b>beau</b> und <b>nouveau</b> mit allen Formen</li>
+        <li><b>4.</b> Das <b>futur composé</b> (je vais manger …)</li>
+        <li><b>5.</b> Fragen mit <b>est-ce que</b>, mit und ohne Fragewort</li>
+      </ul>
+    </div>
+
+    <div class="rule-box"><b>Wichtig:</b> Diese Seite ist eine Hilfe zum Üben. Sie zeigt nicht alles, was in der Interro drankommen kann. Lerne auch mit deinem Heft, deinem Buch und deinen Vokabeln.</div>
+
+    <div class="rule-box"><b>Keine Angst vor Fehlern!</b> Bei jeder Aufgabe siehst du sofort die Lösung und eine kurze Erklärung. Genau so lernst du am meisten. Akzente musst du beim Eintippen nicht setzen.</div>
+  </section>
+
+  <!-- ===================== SPICKZETTEL ===================== -->
+  <section class="panel" id="spick">
+    <h2 class="section-head">Der Spickzettel</h2>
+    <p class="section-lead">Die Grammatik dieser Seite auf einen Blick. Du kannst ihn auch ausdrucken.</p>
+    <div class="flip-tools">
+      <div class="hint">Beim Ausdrucken wird nur der Spickzettel gedruckt.</div>
+      <button class="btn-big alt" id="printSpick" type="button">Spickzettel drucken</button>
+    </div>
+
+    <div class="print-area">
+      <div class="card">
+        <h3 class="sheet-title">1 · qui, que, où</h3>
+        <table class="mini">
+          <tr><th>Wort</th><th>Wann?</th><th>Beispiel</th></tr>
+          <tr><td><b>qui</b></td><td>danach kommt ein <b>Verb</b><br><small>(qui ist das Subjekt)</small></td><td class="fr-cell">la fille <b>qui</b> chante</td></tr>
+          <tr><td><b>que / qu'</b></td><td>danach kommt ein <b>Subjekt</b>: ein Nomen oder ein Personalpronomen (je, tu, il, Paul, ma mère …)<br><small>(que ist das Objekt)</small></td><td class="fr-cell">le livre <b>que</b> je lis<br>le gâteau <b>que</b> ma mère fait</td></tr>
+          <tr><td><b>où</b></td><td>es geht um einen <b>Ort</b></td><td class="fr-cell">la ville <b>où</b> j'habite</td></tr>
+        </table>
+        <p class="matrix-note">Achtung: que wird vor a, e, i, o, u, h zu <b>qu'</b> (le film qu'il regarde). <b>qui</b> bleibt immer qui!</p>
+      </div>
+
+      <div class="card">
+        <h3 class="sheet-title">2 · Die Verben</h3>
+        <div class="verb-grid">
+          <table class="mini">
+            <tr><th></th><th>écrire</th><th>lire</th></tr>
+            <tr><td>je / j'</td><td>écris</td><td>lis</td></tr>
+            <tr><td>tu</td><td>écris</td><td>lis</td></tr>
+            <tr><td>il / elle / on</td><td>écrit</td><td>lit</td></tr>
+            <tr><td>nous</td><td>écri<b>v</b>ons</td><td>li<b>s</b>ons</td></tr>
+            <tr><td>vous</td><td>écri<b>v</b>ez</td><td>li<b>s</b>ez</td></tr>
+            <tr><td>ils / elles</td><td>écri<b>v</b>ent</td><td>li<b>s</b>ent</td></tr>
+          </table>
+          <table class="mini">
+            <tr><th></th><th>vouloir</th><th>pouvoir</th></tr>
+            <tr><td>je</td><td>veux</td><td>peux</td></tr>
+            <tr><td>tu</td><td>veux</td><td>peux</td></tr>
+            <tr><td>il / elle / on</td><td>veut</td><td>peut</td></tr>
+            <tr><td>nous</td><td>voulons</td><td>pouvons</td></tr>
+            <tr><td>vous</td><td>voulez</td><td>pouvez</td></tr>
+            <tr><td>ils / elles</td><td><b>veu</b>lent</td><td><b>peu</b>vent</td></tr>
+          </table>
+          <table class="mini">
+            <tr><th></th><th>prendre</th><th>partager</th></tr>
+            <tr><td>je</td><td>prends</td><td>partage</td></tr>
+            <tr><td>tu</td><td>prends</td><td>partages</td></tr>
+            <tr><td>il / elle / on</td><td>prend</td><td>partage</td></tr>
+            <tr><td>nous</td><td>prenons</td><td>parta<b>ge</b>ons</td></tr>
+            <tr><td>vous</td><td>prenez</td><td>partagez</td></tr>
+            <tr><td>ils / elles</td><td>pre<b>nn</b>ent</td><td>partagent</td></tr>
+          </table>
+        </div>
+        <p class="matrix-note">Nach vouloir und pouvoir kommt der Infinitiv: Je <b>veux</b> jouer. Tu <b>peux</b> venir ?</p>
+      </div>
+
+      <div class="sheet-grid" style="margin-bottom:22px;">
+        <div class="card">
+          <h3 class="sheet-title">3 · beau und nouveau</h3>
+          <table class="mini">
+            <tr><th></th><th>beau</th><th>nouveau</th></tr>
+            <tr><td>männlich</td><td>un beau vélo</td><td>un nouveau vélo</td></tr>
+            <tr><td>männl. + Vokal</td><td>un <b>bel</b> ami</td><td>un <b>nouvel</b> ami</td></tr>
+            <tr><td>weiblich</td><td>une belle robe</td><td>une nouvelle robe</td></tr>
+            <tr><td>männl. Plural</td><td>de beau<b>x</b> vélos</td><td>de nouveau<b>x</b> vélos</td></tr>
+            <tr><td>weibl. Plural</td><td>de belles robes</td><td>de nouvelles robes</td></tr>
+          </table>
+          <p class="matrix-note">beau und nouveau stehen <b>vor</b> dem Nomen.</p>
+        </div>
+        <div class="card">
+          <h3 class="sheet-title">4 · Das futur composé</h3>
+          <p><b>aller</b> + <b>Infinitiv</b> = „ich werde …“</p>
+          <table class="mini">
+            <tr><th></th><th>aller</th><th>+ Infinitiv</th></tr>
+            <tr><td>je</td><td>vais</td><td>manger</td></tr>
+            <tr><td>tu</td><td>vas</td><td>jouer</td></tr>
+            <tr><td>il / elle / on</td><td>va</td><td>lire</td></tr>
+            <tr><td>nous</td><td>allons</td><td>partir</td></tr>
+            <tr><td>vous</td><td>allez</td><td>écrire</td></tr>
+            <tr><td>ils / elles</td><td>vont</td><td>venir</td></tr>
+          </table>
+          <p class="matrix-note">Verneinung: ne … pas um <b>aller</b>: Je <b>ne</b> vais <b>pas</b> venir.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="sheet-title">5 · Fragen mit est-ce que</h3>
+        <table class="mini">
+          <tr><th>Frage</th><th>Deutsch</th><th>Beispiel</th></tr>
+          <tr><td><b>Est-ce que</b> …</td><td>Ja/Nein-Frage</td><td class="fr-cell">Est-ce que tu aimes le foot ?</td></tr>
+          <tr><td><b>Qu'est-ce que</b> …</td><td>Was?</td><td class="fr-cell">Qu'est-ce que tu fais ?</td></tr>
+          <tr><td><b>Où est-ce que</b> …</td><td>Wo? Wohin?</td><td class="fr-cell">Où est-ce que tu habites ?</td></tr>
+          <tr><td><b>Quand est-ce que</b> …</td><td>Wann?</td><td class="fr-cell">Quand est-ce qu'il arrive ?</td></tr>
+          <tr><td><b>Pourquoi est-ce que</b> …</td><td>Warum?</td><td class="fr-cell">Pourquoi est-ce que tu ris ?</td></tr>
+          <tr><td><b>Comment est-ce que</b> …</td><td>Wie?</td><td class="fr-cell">Comment est-ce que tu vas à l'école ?</td></tr>
+          <tr><td><b>À quelle heure est-ce que</b> …</td><td>Um wie viel Uhr?</td><td class="fr-cell">À quelle heure est-ce que le film commence ?</td></tr>
+        </table>
+        <p class="matrix-note">Vor il, elle, on wird est-ce que zu <b>est-ce qu'</b>. Danach geht der Satz ganz normal weiter: Subjekt + Verb.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ÜBEN ===================== -->
+  <section class="panel" id="uebung">
+    <h2 class="section-head">Thema für Thema üben</h2>
+    <p class="section-lead">Such dir ein Thema aus. Fang am besten mit dem an, bei dem du dich noch unsicher fühlst.</p>
+
+    <div class="subnav-group">
+      <div class="subnav">
+        <button class="subnav-btn active c-a" data-target="u-rel" type="button">qui · que · où</button>
+        <button class="subnav-btn c-b" data-target="u-vtab" type="button">Verben: Tabelle</button>
+        <button class="subnav-btn c-c" data-target="u-vsatz" type="button">Verben im Satz</button>
+        <button class="subnav-btn c-reg" data-target="u-adj" type="button">beau · nouveau</button>
+        <button class="subnav-btn c-irr" data-target="u-fut" type="button">futur composé</button>
+        <button class="subnav-btn c-a" data-target="u-q" type="button">est-ce que</button>
+      </div>
+
+      <div class="subpanel active" id="u-rel">
+        <div class="rule-box" style="margin-top:0;"><b>Frag dich:</b> Was kommt danach? Ein Verb → <i>qui</i>. Ein Subjekt, also ein Nomen oder ein Personalpronomen (je, tu, il, Paul, ma mère …) → <i>que</i>. Es geht um einen Ort → <i>où</i>.</div>
+        <div class="quiz" data-set="rel"></div>
+      </div>
+      <div class="subpanel" id="u-vtab">
+        <div class="rule-box" style="margin-top:0;"><b>Das übst du:</b> Alle sechs Formen eines Verbs. Tipp: Sprich die Formen beim Eintippen leise mit.</div>
+        <div class="quiz" data-set="vtab"></div>
+      </div>
+      <div class="subpanel" id="u-vsatz">
+        <div class="rule-box" style="margin-top:0;"><b>Das übst du:</b> Die richtige Verbform im Satz. Schau zuerst: Wer macht etwas?</div>
+        <div class="quiz" data-set="vsatz"></div>
+      </div>
+      <div class="subpanel" id="u-adj">
+        <div class="rule-box" style="margin-top:0;"><b>Frag dich:</b> Ist das Nomen männlich oder weiblich? Einzahl oder Mehrzahl? Fängt es mit einem Vokal an?</div>
+        <div class="quiz" data-set="adj"></div>
+      </div>
+      <div class="subpanel" id="u-fut">
+        <div class="rule-box" style="margin-top:0;"><b>Das übst du:</b> aller (vais, vas, va, allons, allez, vont) + Infinitiv.</div>
+        <div class="quiz" data-set="fut"></div>
+      </div>
+      <div class="subpanel" id="u-q">
+        <div class="rule-box" style="margin-top:0;"><b>Tipp:</b> Lies zuerst die Antwort. Sie verrät dir, welches Fragewort du brauchst.</div>
+        <div class="quiz" data-set="q"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROBE / SPIEL ===================== -->
+  <section class="panel" id="probe">
+    <h2 class="section-head">Mission Paris</h2>
+    <p class="section-lead">Die Probe-Interro als Spiel: alle Themen dieser Seite gemischt. Reise von Dresden bis zum Eiffelturm, sammle Punkte und knack deinen Highscore!</p>
+
+    <div class="game" id="game">
+      <!-- Startbildschirm -->
+      <div class="g-screen" id="gStart">
+        <div class="g-title">Mission Paris</div>
+        <div class="g-sub">15 Fragen · 5 Stationen · 3 Leben</div>
+        <ul class="g-rules">
+          <li><span class="g-ico">❤️</span> Du hast <b>3 Leben</b>. Bei einem Fehler verlierst du eins.</li>
+          <li><span class="g-ico">⚡</span> Antworte schnell: Je mehr vom <b>Blitz-Balken</b> übrig ist, desto mehr Bonuspunkte.</li>
+          <li><span class="g-ico">🔥</span> Mehrere Richtige hintereinander geben einen <b>Combo</b>: ×2 ab 3, ×3 ab 5 richtigen Antworten.</li>
+          <li><span class="g-ico">💖</span> Bei <b>5 Richtigen in Folge</b> bekommst du ein Leben zurück.</li>
+        </ul>
+        <div class="g-best" id="gBestStart"></div>
+        <button class="g-btn" id="gGo" type="button">Los geht's !</button>
+      </div>
+
+      <!-- Spielbildschirm -->
+      <div class="g-screen" id="gPlay" hidden>
+        <div class="g-hud">
+          <div class="g-lives" id="gLives" aria-label="Leben"></div>
+          <div class="g-combo" id="gCombo"></div>
+          <div class="g-score"><span id="gScore">0</span> <small>Pkt.</small></div>
+        </div>
+
+        <div class="g-track" id="gTrack"></div>
+
+        <div class="g-qcard">
+          <div class="g-qnum" id="gQnum"></div>
+          <div class="g-timer"><div class="g-timer-fill" id="gTimer"></div></div>
+          <div class="g-q" id="gQ"></div>
+          <div class="g-opts" id="gOpts"></div>
+          <div class="g-fb" id="gFb" hidden></div>
+          <div class="g-next-row"><button class="g-btn small" id="gNext" type="button" hidden>Weiter ›</button></div>
+        </div>
+        <div class="g-pop" id="gPop"></div>
+      </div>
+
+      <!-- Level-Banner -->
+      <div class="g-banner" id="gBanner" hidden></div>
+
+      <!-- Endbildschirm -->
+      <div class="g-screen" id="gEnd" hidden>
+        <div class="g-title" id="gEndTitle"></div>
+        <div class="g-rank" id="gRank"></div>
+        <div class="g-stars" id="gStars"></div>
+        <div class="g-stats" id="gStats"></div>
+        <div class="g-best" id="gBestEnd"></div>
+        <div class="g-tips" id="gTips"></div>
+        <button class="g-btn" id="gAgain" type="button">Nochmal spielen</button>
+      </div>
+      <div class="g-confetti" id="gConfetti"></div>
+    </div>
+  </section>
+
+  <footer class="foot">Horlacher · SJ 2026/27</footer>
+</div>
+
+<script src="engine.js"></script>
+<script>
+document.getElementById('printSpick').addEventListener('click', ()=>{
+  document.body.classList.add('printing-spick');
+  const done = ()=>{ document.body.classList.remove('printing-spick'); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  window.print();
+});
+
+const SETS = {
+  rel: [
+    { t:'mc', q:"C'est la fille ______ habite à côté.", o:["qui","que","où"], c:0, e:"Danach kommt das Verb habite: qui." },
+    { t:'mc', q:"Voilà le livre ______ je lis.", o:["qui","que","où"], c:1, e:"Danach kommt das Subjekt je: que." },
+    { t:'mc', q:"C'est la ville ______ j'habite.", o:["qui","que","où"], c:2, e:"Es geht um einen Ort: où." },
+    { t:'mc', q:"Le garçon ______ joue au foot s'appelle Léo.", o:["qui","que","où"], c:0, e:"Danach kommt das Verb joue: qui." },
+    { t:'mc', q:"C'est la BD ______ il préfère.", o:["que","qu'","qui"], c:1, e:"Danach kommt das Subjekt il, das mit Vokal beginnt: qu'." },
+    { t:'mc', q:"Voilà le collège ______ mon frère travaille.", o:["qui","que","où"], c:2, e:"Das collège ist ein Ort: où." },
+    { t:'fill', q:"J'ai une copine ______ aime la musique.", a:["qui"], e:"Danach kommt das Verb aime: qui." },
+    { t:'mc', q:"Le gâteau ______ ma mère fait est délicieux.", o:["qui","que","où"], c:1, e:"Danach kommt das Subjekt ma mère (ein Nomen): que." },
+    { t:'fill', q:"C'est le film ______ tu regardes ?", a:["que"], e:"Danach kommt das Subjekt tu: que." },
+    { t:'fill', q:"Paris est la ville ______ nous allons cet été.", a:["où","ou"], e:"Paris ist ein Ort: où." },
+    { t:'fill', q:"Le chien ______ elle a s'appelle Max.", a:["qu'","qu"], e:"Danach kommt das Subjekt elle, das mit Vokal beginnt: qu'." },
+    { t:'fill', q:"Le prof ______ est sympa, c'est M. Martin.", a:["qui"], e:"Danach kommt das Verb est: qui." },
+    { t:'puz', de:"Das ist das Buch, das ich lese.", w:["C'est","le","livre","que","je","lis"] }
+  ],
+  vtab: [
+    { t:'gap', q:"<b>écrire:</b> j'___ · tu ___ · il ___ · nous ___ · vous ___ · ils ___", g:[["écris"],["écris"],["écrit"],["écrivons"],["écrivez"],["écrivent"]], e:"Im Plural kommt ein v dazu: écrivons, écrivez, écrivent." },
+    { t:'gap', q:"<b>lire:</b> je ___ · tu ___ · elle ___ · nous ___ · vous ___ · elles ___", g:[["lis"],["lis"],["lit"],["lisons"],["lisez"],["lisent"]], e:"Im Plural kommt ein s dazu: lisons, lisez, lisent." },
+    { t:'gap', q:"<b>vouloir:</b> je ___ · tu ___ · il ___ · nous ___ · vous ___ · ils ___", g:[["veux"],["veux"],["veut"],["voulons"],["voulez"],["veulent"]], e:"Achtung bei ils: veulent." },
+    { t:'gap', q:"<b>pouvoir:</b> je ___ · tu ___ · on ___ · nous ___ · vous ___ · ils ___", g:[["peux"],["peux"],["peut"],["pouvons"],["pouvez"],["peuvent"]], e:"Achtung bei ils: peuvent." },
+    { t:'gap', q:"<b>prendre:</b> je ___ · tu ___ · il ___ · nous ___ · vous ___ · ils ___", g:[["prends"],["prends"],["prend"],["prenons"],["prenez"],["prennent"]], e:"Achtung bei ils: prennent mit zwei n." },
+    { t:'gap', q:"<b>partager:</b> je ___ · tu ___ · elle ___ · nous ___ · vous ___ · elles ___", g:[["partage"],["partages"],["partage"],["partageons"],["partagez"],["partagent"]], e:"Bei nous bleibt das e: partageons." }
+  ],
+  vsatz: [
+    { t:'mc', q:"Nous ______ une lettre à Paul. (écrire)", o:["écrivons","écrisons","écrivez"], c:0, e:"nous écrivons, mit v." },
+    { t:'mc', q:"Ils ______ une BD. (lire)", o:["lisent","lient","lit"], c:0, e:"ils lisent, mit s." },
+    { t:'mc', q:"Tu ______ venir avec moi ? (vouloir)", o:["veux","veut","voulez"], c:0, e:"tu veux, mit x." },
+    { t:'mc', q:"Elles ne ______ pas venir. (pouvoir)", o:["peuvent","pouvent","peut"], c:0, e:"elles peuvent." },
+    { t:'mc', q:"Vous ______ le bus ? (prendre)", o:["prenez","prendez","prennez"], c:0, e:"vous prenez, ohne d und mit einem n." },
+    { t:'mc', q:"Nous ______ une pizza. (partager)", o:["partageons","partagons","partagez"], c:0, e:"nous partageons: das e bleibt." },
+    { t:'fill', q:"Elle ______ un SMS à sa copine. (écrire)", a:["écrit","ecrit"], e:"il/elle écrit, mit t." },
+    { t:'fill', q:"Je ______ un jus d'orange. (prendre)", a:["prends"], e:"je prends, mit s." },
+    { t:'fill', q:"Ils ______ jouer au foot. (vouloir)", a:["veulent"], e:"ils veulent." },
+    { t:'fill', q:"On ______ aller au cinéma. (pouvoir)", a:["peut"], e:"on peut, wie il und elle." },
+    { t:'fill', q:"Vous ______ beaucoup de livres ! (lire)", a:["lisez"], e:"vous lisez." },
+    { t:'fill', q:"Mes parents ______ un taxi. (prendre)", a:["prennent"], e:"Mes parents = ils, also prennent." }
+  ],
+  adj: [
+    { t:'mc', q:"C'est un ______ vélo.", o:["beau","bel","belle"], c:0, e:"vélo ist männlich und fängt mit v an: beau." },
+    { t:'mc', q:"C'est un ______ ami.", o:["beau","bel","belle"], c:1, e:"ami ist männlich und fängt mit Vokal an: bel." },
+    { t:'mc', q:"Elle a une ______ maison.", o:["beau","bel","belle"], c:2, e:"maison ist weiblich: belle." },
+    { t:'mc', q:"J'ai un ______ ordinateur.", o:["nouveau","nouvel","nouvelle"], c:1, e:"ordinateur ist männlich und fängt mit Vokal an: nouvel." },
+    { t:'mc', q:"Regarde les ______ vélos !", o:["nouveaux","nouveau","nouvelles"], c:0, e:"männlich Plural: nouveaux mit x." },
+    { t:'mc', q:"Ce sont de ______ photos.", o:["beaux","belles","bels"], c:1, e:"photo ist weiblich, Plural: belles." },
+    { t:'fill', q:"C'est une ______ copine. (nouveau)", a:["nouvelle"], e:"copine ist weiblich: nouvelle." },
+    { t:'fill', q:"Il y a un ______ élève dans la classe. (nouveau)", a:["nouvel"], e:"élève (Junge) fängt mit Vokal an: nouvel." },
+    { t:'fill', q:"Il a de ______ yeux. (beau)", a:["beaux"], e:"yeux ist männlich Plural: beaux." },
+    { t:'fill', q:"Voilà mon ______ T-shirt. (nouveau)", a:["nouveau"], e:"T-shirt ist männlich und fängt mit T an: nouveau." },
+    { t:'fill', q:"Paris est une ______ ville. (beau)", a:["belle"], e:"ville ist weiblich: belle." },
+    { t:'fill', q:"Nous avons de ______ chaussures. (nouveau)", a:["nouvelles"], e:"chaussure ist weiblich, Plural: nouvelles." }
+  ],
+  fut: [
+    { t:'mc', q:"Demain, je ______ au cinéma.", o:["vais aller","va aller","vais allé"], c:0, e:"je vais + Infinitiv aller." },
+    { t:'mc', q:"Ce soir, nous ______ un film.", o:["allons regarder","allons regardons","allez regarder"], c:0, e:"nous allons + Infinitiv regarder." },
+    { t:'mc', q:"Ils ______ leurs devoirs.", o:["vont faire","va faire","vont font"], c:0, e:"ils vont + Infinitiv faire." },
+    { t:'mc', q:"Wie heißt die Verneinung? „Je vais partir.“", o:["Je ne vais pas partir.","Je vais ne pas partir.","Je ne vais partir pas."], c:0, e:"ne … pas steht um vais." },
+    { t:'fill', q:"Tu ______ manger chez Paul ? (aller)", a:["vas"], e:"tu vas." },
+    { t:'fill', q:"Elle ______ écrire une lettre. (aller)", a:["va"], e:"elle va." },
+    { t:'fill', q:"Vous ______ prendre le train ? (aller)", a:["allez"], e:"vous allez." },
+    { t:'gap', q:"Samedi, mes copains ___ ___ au foot. (jouer)", g:[["vont"],["jouer"]], e:"mes copains = ils: vont jouer." },
+    { t:'gap', q:"Demain, nous ___ ___ nos grands-parents. (voir)", g:[["allons"],["voir"]], e:"nous allons voir." },
+    { t:'puz', de:"Ich werde morgen ein Buch lesen.", w:["Je","vais","lire","un","livre","demain"] },
+    { t:'puz', de:"Wir werden nicht ins Schwimmbad gehen.", w:["Nous","n'allons","pas","aller","à","la","piscine"] }
+  ],
+  q: [
+    { t:'mc', q:"______ tu habites ? – À Dresde.", o:["Où est-ce que","Qu'est-ce que","Est-ce que"], c:0, e:"Die Antwort ist ein Ort: Où est-ce que." },
+    { t:'mc', q:"______ tu fais ce soir ? – Je lis.", o:["Qu'est-ce que","Où est-ce que","Est-ce que"], c:0, e:"Die Antwort sagt, was man macht: Qu'est-ce que." },
+    { t:'mc', q:"______ tu aimes le foot ? – Oui, beaucoup !", o:["Est-ce que","Qu'est-ce que","Où est-ce que"], c:0, e:"Antwort Oui/Non: Est-ce que." },
+    { t:'mc', q:"______ elle arrive ? – Demain matin.", o:["Quand est-ce qu'","Où est-ce qu'","Qu'est-ce qu'"], c:0, e:"Die Antwort ist eine Zeit: Quand est-ce qu'." },
+    { t:'mc', q:"______ tu es triste ? – Parce que mon chat est malade.", o:["Pourquoi est-ce que","Comment est-ce que","Quand est-ce que"], c:0, e:"Die Antwort beginnt mit parce que: Pourquoi est-ce que." },
+    { t:'mc', q:"______ tu vas à l'école ? – À vélo.", o:["Comment est-ce que","Pourquoi est-ce que","Où est-ce que"], c:0, e:"Wie? Comment est-ce que." },
+    { t:'mc', q:"______ il a un chien ? – Non, un chat.", o:["Est-ce qu'","Est-ce que","Qu'est-ce qu'"], c:0, e:"Ja/Nein-Frage, vor il: Est-ce qu'." },
+    { t:'fill', q:"______ est-ce que le cours commence ? – À huit heures.", a:["À quelle heure","a quelle heure"], e:"Um wie viel Uhr? À quelle heure." },
+    { t:'fill', q:"______ tu veux manger ? – Une pizza ! (Was?)", a:["Qu'est-ce que","qu est-ce que","qu'est ce que"], e:"Was? Qu'est-ce que." },
+    { t:'fill', q:"______ vous allez en vacances ? – En France. (Wohin?)", a:["Où est-ce que","ou est-ce que","où est ce que"], e:"Wohin? Où est-ce que." },
+    { t:'puz', de:"Wo wohnst du?", w:["Où","est-ce","que","tu","habites","?"] },
+    { t:'puz', de:"Was liest du?", w:["Qu'est-ce","que","tu","lis","?"] }
+  ]
+};
+document.querySelectorAll('.quiz').forEach(el=>mountQuiz(el, SETS[el.dataset.set], {manual:true}));
+// ===================== MISSION PARIS (Spiel) =====================
+(function(){
+const TOPICS = {
+  rel:{ name:"qui · que · où", tab:"u-rel" },
+  verb:{ name:"die Verben", tab:"u-vsatz" },
+  adj:{ name:"beau · nouveau", tab:"u-adj" },
+  fut:{ name:"das futur composé", tab:"u-fut" },
+  q:{ name:"Fragen mit est-ce que", tab:"u-q" }
+};
+const POOL = [
+  { k:'rel', q:"Voilà le garçon ___ je préfère.", o:["que","qui","où"], e:"Danach kommt das Subjekt je: que." },
+  { k:'rel', q:"C'est le parc ___ nous jouons.", o:["où","qui","que"], e:"Der Park ist ein Ort: où." },
+  { k:'rel', q:"J'ai une sœur ___ chante bien.", o:["qui","que","où"], e:"Danach kommt das Verb chante: qui." },
+  { k:'rel', q:"Le film ___ il regarde est drôle.", o:["qu'","que","qui"], e:"Danach kommt das Subjekt il, das mit Vokal beginnt: qu'." },
+  { k:'rel', q:"C'est le magasin ___ ma mère travaille.", o:["où","que","qui"], e:"Der Laden ist ein Ort: où." },
+  { k:'rel', q:"Le prof ___ arrive s'appelle M. Petit.", o:["qui","que","qu'"], e:"Danach kommt das Verb arrive: qui. qui bleibt immer qui." },
+  { k:'rel', q:"La BD ___ tu lis est super.", o:["que","qui","où"], e:"Danach kommt das Subjekt tu: que." },
+  { k:'rel', q:"Le gâteau ___ ma mère fait est délicieux.", o:["que","qui","où"], e:"Danach kommt das Subjekt ma mère (ein Nomen): que." },
+  { k:'rel', q:"Voilà la photo ___ Léa préfère.", o:["que","qui","où"], e:"Danach kommt das Subjekt Léa: que." },
+  { k:'verb', q:"Nous ___ des romans. (lire)", o:["lisons","lions","lisez"], e:"nous lisons, mit s." },
+  { k:'verb', q:"Ils ___ le métro. (prendre)", o:["prennent","prendent","prenent"], e:"ils prennent, mit zwei n." },
+  { k:'verb', q:"Tu ___ m'aider ? (pouvoir)", o:["peux","peut","pouvez"], e:"tu peux, mit x." },
+  { k:'verb', q:"Vous ___ un e-mail. (écrire)", o:["écrivez","écrisez","écrivons"], e:"vous écrivez, mit v." },
+  { k:'verb', q:"Nous ___ nos BD. (partager)", o:["partageons","partagons","partagent"], e:"nous partageons: das e bleibt." },
+  { k:'verb', q:"Elles ___ jouer dehors. (vouloir)", o:["veulent","voulent","veut"], e:"elles veulent." },
+  { k:'verb', q:"Il ___ une lettre à sa grand-mère. (écrire)", o:["écrit","écris","écrivent"], e:"il écrit, mit t." },
+  { k:'verb', q:"Mes copains ne ___ pas venir. (pouvoir)", o:["peuvent","pouvent","peut"], e:"Mes copains = ils: peuvent." },
+  { k:'adj', q:"C'est un ___ hôtel.", o:["bel","beau","belle"], e:"männlich, und hôtel fängt mit h an: bel." },
+  { k:'adj', q:"J'ai une ___ trousse.", o:["nouvelle","nouveau","nouvel"], e:"trousse ist weiblich: nouvelle." },
+  { k:'adj', q:"Ce sont de ___ livres.", o:["beaux","beau","belles"], e:"männlich Plural: beaux." },
+  { k:'adj', q:"Voilà mon ___ ami Hugo.", o:["nouvel","nouveau","nouvelle"], e:"ami ist männlich und fängt mit Vokal an: nouvel." },
+  { k:'adj', q:"Quelle ___ robe !", o:["belle","beau","bel"], e:"robe ist weiblich: belle." },
+  { k:'adj', q:"Il a un ___ vélo rouge.", o:["nouveau","nouvel","nouvelle"], e:"vélo ist männlich und fängt mit v an: nouveau." },
+  { k:'adj', q:"Elles ont de ___ chaussures.", o:["belles","beaux","bels"], e:"chaussure ist weiblich, Plural: belles." },
+  { k:'fut', q:"Demain, je ___ mes devoirs.", o:["vais faire","va faire","vais fais"], e:"je vais + Infinitiv faire." },
+  { k:'fut', q:"Ce soir, nous ___ au restaurant.", o:["allons manger","allez manger","allons mangeons"], e:"nous allons + Infinitiv." },
+  { k:'fut', q:"Verneine: Elle va venir.", o:["Elle ne va pas venir.","Elle va ne pas venir.","Elle ne va venir pas."], e:"ne … pas steht um va." },
+  { k:'fut', q:"Samedi, ils ___ au foot.", o:["vont jouer","va jouer","vont joue"], e:"ils vont + Infinitiv jouer." },
+  { k:'fut', q:"Tu ___ lire ce livre ?", o:["vas","va","vais"], e:"tu vas." },
+  { k:'fut', q:"Vous ___ prendre le train.", o:["allez","allons","vont"], e:"vous allez." },
+  { k:'fut', q:"Ich werde fernsehen.", o:["Je vais regarder la télé.","Je regarde la télé.","Je vais regardé la télé."], e:"futur composé: je vais + Infinitiv regarder." },
+  { k:'q', q:"___ tu rentres ? – À six heures.", o:["À quelle heure est-ce que","Où est-ce que","Qu'est-ce que"], e:"Die Antwort ist eine Uhrzeit." },
+  { k:'q', q:"___ tu habites ? – À Dresde.", o:["Où est-ce que","Quand est-ce que","Qu'est-ce que"], e:"Die Antwort ist ein Ort." },
+  { k:'q', q:"___ tu fais samedi ? – Je joue au foot.", o:["Qu'est-ce que","Est-ce que","Où est-ce que"], e:"Was machst du? Qu'est-ce que." },
+  { k:'q', q:"___ elle a un chat ? – Oui.", o:["Est-ce qu'","Qu'est-ce qu'","Est-ce que"], e:"Ja/Nein-Frage, vor elle: Est-ce qu'." },
+  { k:'q', q:"___ tu ris ? – Parce que c'est drôle !", o:["Pourquoi est-ce que","Comment est-ce que","Où est-ce que"], e:"Antwort mit parce que: Pourquoi." },
+  { k:'q', q:"___ tu vas à l'école ? – En bus.", o:["Comment est-ce que","Quand est-ce que","Pourquoi est-ce que"], e:"Wie? Comment." },
+  { k:'q', q:"___ les vacances commencent ? – En décembre.", o:["Quand est-ce que","Où est-ce que","Qu'est-ce que"], e:"Die Antwort ist eine Zeit: Quand." }
+];
+const STATIONS = [
+  { city:"Dresde", em:"🏰" }, { city:"Strasbourg", em:"⛪" }, { city:"Reims", em:"🥐" },
+  { city:"Versailles", em:"👑" }, { city:"Paris", em:"🗼" }
+];
+const PER = 3, TIME = 12000, KEY = 'mp7a_highscore';
+const $ = id => document.getElementById(id);
+function mix(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function getBest(){ try{ return parseInt(localStorage.getItem(KEY)) || 0; }catch(e){ return 0; } }
+function setBest(v){ try{ localStorage.setItem(KEY, v); }catch(e){} }
+
+let qs, cur, lives, score, streak, bestStreak, right, errs, t0, raf, answered;
+
+function showBest(){
+  const b = getBest();
+  const txt = b ? `🏆 Dein Highscore: ${b} Punkte` : '';
+  $('gBestStart').textContent = txt;
+}
+function show(id){ ['gStart','gPlay','gEnd'].forEach(s=>$(s).hidden = (s!==id)); }
+
+function start(){
+  const by = {}; POOL.forEach(p=>(by[p.k] = by[p.k] || []).push(p));
+  // je Station ein Thema-Mix: aus jedem Thema 3 Fragen, dann gemischt
+  let pick = []; Object.keys(by).forEach(k=>pick = pick.concat(mix(by[k]).slice(0,PER)));
+  qs = mix(pick);
+  cur = 0; lives = 3; score = 0; streak = 0; bestStreak = 0; right = 0; errs = {};
+  $('gScore').textContent = 0;
+  show('gPlay'); drawTrack(); drawLives(); drawCombo();
+  banner(0, ()=>render());
+}
+
+function drawTrack(){
+  const lvl = Math.floor(cur/PER);
+  $('gTrack').innerHTML = STATIONS.map((s,i)=>{
+    const cls = i < lvl ? 'done' : (i === lvl ? 'now' : '');
+    const st = `<div class="g-st ${cls}"><div class="dot">${s.em}</div>${s.city}</div>`;
+    if(i === STATIONS.length-1) return st;
+    const fill = i < lvl ? 100 : (i === lvl ? Math.round((cur%PER)/PER*100) : 0);
+    return st + `<div class="g-line"><i style="width:${fill}%"></i></div>`;
+  }).join('');
+}
+function drawLives(){
+  $('gLives').innerHTML = [0,1,2].map(i=>`<span class="${i<lives?'':'lost'}">❤️</span>`).join('');
+}
+function mult(){ return streak >= 5 ? 3 : (streak >= 3 ? 2 : 1); }
+function drawCombo(){
+  const c = $('gCombo');
+  if(streak >= 3){ c.textContent = `🔥 Combo ×${mult()}`; c.classList.add('hot'); }
+  else { c.textContent = streak ? `${streak} richtig in Folge` : ''; c.classList.remove('hot'); }
+}
+function pop(text){
+  const p = $('gPop'); p.textContent = text; p.classList.remove('show'); void p.offsetWidth; p.classList.add('show');
+}
+function banner(lvl, cb){
+  const s = STATIONS[lvl], b = $('gBanner');
+  b.innerHTML = `<div class="lv">Station ${lvl+1} von ${STATIONS.length}</div><div class="em">${s.em}</div><div class="city">${s.city}</div>`;
+  b.hidden = false;
+  setTimeout(()=>{ b.hidden = true; cb(); }, 1300);
+}
+
+function render(){
+  const it = qs[cur]; answered = false;
+  drawTrack();
+  $('gQnum').textContent = `Frage ${cur+1} von ${qs.length} · ${TOPICS[it.k].name}`;
+  $('gQ').textContent = it.q;
+  $('gFb').hidden = true; $('gNext').hidden = true;
+  const box = $('gOpts'); box.innerHTML = '';
+  mix(it.o.map((_,i)=>i)).forEach(i=>{
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'g-opt'; b.textContent = it.o[i];
+    b.addEventListener('click', ()=>answer(i, b)); box.appendChild(b);
+  });
+  t0 = performance.now(); tick();
+}
+function tick(){
+  const left = Math.max(0, 1 - (performance.now()-t0)/TIME);
+  const f = $('gTimer'); f.style.width = (left*100)+'%'; f.style.backgroundPosition = (left*100)+'% 0';
+  if(left > 0 && !answered) raf = requestAnimationFrame(tick);
+}
+function answer(i, btn){
+  if(answered) return; answered = true; cancelAnimationFrame(raf);
+  const it = qs[cur], ok = (i === 0);
+  const left = Math.max(0, 1 - (performance.now()-t0)/TIME);
+  document.querySelectorAll('.g-opt').forEach(b=>{ b.disabled = true; if(b.textContent === it.o[0]) b.classList.add('ok'); });
+  const fb = $('gFb'); fb.hidden = false;
+  if(ok){
+    streak++; right++; bestStreak = Math.max(bestStreak, streak);
+    const bonus = Math.round(left*50), pts = (100 + bonus) * mult();
+    score += pts; $('gScore').textContent = score;
+    fb.className = 'g-fb ok'; fb.textContent = `✓ Richtig! +${pts} Punkte` + (bonus ? ` (⚡ Blitz-Bonus ${bonus})` : '') + '. ' + it.e;
+    if(streak === 5 && lives < 3){ lives++; drawLives(); pop('💖 +1 Leben!'); }
+    else if(streak === 3 || streak === 5){ pop(`Combo ×${mult()}!`); }
+    else pop(left > .6 ? 'Super schnell!' : (['Bravo !','Génial !','Top !','Excellent !'])[Math.floor(Math.random()*4)]);
+  } else {
+    btn.classList.add('no'); streak = 0; lives--; errs[it.k] = (errs[it.k]||0) + 1; drawLives();
+    fb.className = 'g-fb no'; fb.textContent = `✗ Richtig ist: ${it.o[0]}. ${it.e}`;
+  }
+  drawCombo();
+  const nb = $('gNext'); nb.hidden = false;
+  nb.textContent = (lives <= 0 || cur >= qs.length-1) ? 'Zum Ergebnis ›' : 'Weiter ›';
+  nb.focus({preventScroll:true});
+}
+function next(){
+  if(lives <= 0 || cur >= qs.length-1){ end(); return; }
+  cur++;
+  if(cur % PER === 0) banner(cur/PER, ()=>render()); else render();
+}
+function end(){
+  const won = lives > 0, old = getBest(), rec = score > old;
+  if(rec) setBest(score);
+  $('gEndTitle').textContent = won ? 'Bienvenue à Paris !' : 'Game over';
+  const ratio = right / qs.length;
+  const rank = !won ? 'Fast geschafft. Versuch es nochmal!' :
+    ratio === 1 ? '🏆 Légende de Paris' : ratio >= .8 ? '🥇 Champion' : ratio >= .6 ? '🥈 Explorateur' : '🥉 Voyageur';
+  $('gRank').textContent = rank;
+  const stars = !won ? 0 : ratio === 1 ? 3 : ratio >= .7 ? 2 : 1;
+  $('gStars').innerHTML = [0,1,2].map(i=>`<span class="${i<stars?'':'off'}">⭐</span>`).join('');
+  $('gStats').innerHTML = `<div><b>${score}</b>Punkte</div><div><b>${right} / ${cur+1}</b>richtig</div><div><b>${bestStreak}</b>beste Serie</div>`;
+  $('gBestEnd').textContent = rec ? `🎉 Neuer Highscore!` : (old ? `🏆 Dein Highscore: ${old} Punkte` : '');
+  const ks = Object.keys(errs);
+  $('gTips').innerHTML = ks.length
+    ? '<b>Das kannst du noch üben:</b> ' + ks.map(k=>`<a href="#" data-tab-go="${TOPICS[k].tab}">${TOPICS[k].name}</a>`).join(', ') + '. Klick auf ein Thema, dann kommst du direkt zur Übung.'
+    : (won ? 'Kein einziger Fehler. Wahnsinn!' : '');
+  $('gTips').querySelectorAll('[data-tab-go]').forEach(a=>a.addEventListener('click', e=>{
+    e.preventDefault();
+    document.querySelector('.tab-btn[data-tab="uebung"]').click();
+    document.querySelector(`.subnav-btn[data-target="${a.dataset.tabGo}"]`).click();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }));
+  show('gEnd');
+  if(won) confetti();
+}
+function confetti(){
+  const box = $('gConfetti'); box.innerHTML = '';
+  const cols = ['#0055A4','#FFFFFF','#EF4135','#FFC93D','#14A38B'];
+  for(let i=0;i<80;i++){
+    const c = document.createElement('i');
+    c.style.left = Math.random()*100+'%'; c.style.background = cols[i%cols.length];
+    c.style.animationDuration = (1.8+Math.random()*1.8)+'s'; c.style.animationDelay = (Math.random()*.6)+'s';
+    box.appendChild(c);
+  }
+  setTimeout(()=>box.innerHTML = '', 4200);
+}
+$('gGo').addEventListener('click', start);
+$('gAgain').addEventListener('click', ()=>{ showBest(); start(); });
+$('gNext').addEventListener('click', next);
+showBest();
+})();
+
+</script>
+</body>
+</html>
