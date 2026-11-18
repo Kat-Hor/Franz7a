@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<!--
+  Original author: Horlacher (7a)
+  Created: 2026-11-18
+  This material was created for Horlacher's own French class (7a).
+  Not authorized for redistribution under a different author's name.
+-->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les vêtements et les couleurs — 7a</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .ico{ display:block; width:100%; height:auto; }
+  .say{ font-size:15px; background:#fff; border:2px solid var(--ink); border-radius:999px; padding:1px 9px; cursor:pointer; box-shadow:2px 2px 0 var(--ink); vertical-align:middle; }
+  .say:active{ transform:translate(2px,2px); box-shadow:none; }
+
+  /* Wortkarten */
+  .word-tools{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+  .wgrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .wcard{ background:#fff; border:3px solid var(--ink); border-radius:16px; box-shadow:4px 4px 0 var(--ink); padding:10px 10px 12px; text-align:center; cursor:pointer; transition:transform .1s; }
+  .wcard:hover{ transform:translate(-1px,-1px); }
+  .wcard .pic{ width:84px; margin:0 auto 6px; }
+  .wcard .fr{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:16px; }
+  .wcard .de{ font-size:14px; color:var(--ink-soft); font-weight:700; }
+  .wcard .art{ color:var(--rouge); }
+  .hide-words .wcard:not(.open) .fr, .hide-words .wcard:not(.open) .de{ filter:blur(7px); user-select:none; }
+  .g-m{ border-top:8px solid var(--bleu); }
+  .g-f{ border-top:8px solid var(--rouge); }
+  .g-p{ border-top:8px solid var(--teal); }
+  .legend{ display:flex; gap:14px; flex-wrap:wrap; font-weight:700; font-size:15px; margin:0 0 14px; }
+  .legend span::before{ content:""; display:inline-block; width:18px; height:8px; border-radius:3px; margin-right:6px; vertical-align:middle; }
+  .legend .lm::before{ background:var(--bleu); } .legend .lf::before{ background:var(--rouge); } .legend .lp::before{ background:var(--teal); }
+
+  /* Farben */
+  .cgrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(205px,1fr)); gap:12px; }
+  .cchip{ display:flex; align-items:center; gap:10px; background:#fff; border:3px solid var(--ink); border-radius:14px; padding:8px 10px; box-shadow:3px 3px 0 var(--ink); }
+  .cchip .dot{ width:34px; height:34px; border-radius:50%; border:3px solid var(--ink); flex:none; }
+  .cchip .nm{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:15px; line-height:1.25; flex:1; white-space:nowrap; }
+  .cchip .nm small{ display:block; color:var(--ink-soft); font-size:13px; }
+  .lab{ display:grid; grid-template-columns:minmax(160px,240px) 1fr; gap:22px; align-items:center; }
+  @media(max-width:640px){ .lab{ grid-template-columns:1fr; } }
+  .lab-pic{ background:var(--bg); border:3px solid var(--ink); border-radius:18px; padding:14px; }
+  .lab-out{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:clamp(20px,4vw,28px); margin:6px 0 4px; }
+  .lab-out .adj{ color:var(--rouge); text-decoration:underline; text-decoration-thickness:3px; }
+  .lab-note{ color:var(--ink-soft); font-weight:700; font-size:15px; min-height:20px; }
+  .pickrow{ display:flex; flex-wrap:wrap; gap:7px; margin:8px 0 14px; }
+  .pk{ border:3px solid var(--ink); border-radius:10px; background:#fff; cursor:pointer; padding:3px; box-shadow:2px 2px 0 var(--ink); }
+  .pk.on{ background:var(--gold); transform:translate(2px,2px); box-shadow:none; }
+  .pk.it{ width:52px; } .pk.cl{ width:40px; height:40px; border-radius:50%; padding:0; }
+  .lab-label{ font-family:'Bangers',cursive; letter-spacing:.05em; font-size:19px; }
+
+  /* Beschreiben */
+  .desc-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:22px; }
+  .vb{ background:#fff; border:3px solid var(--ink); border-radius:16px; box-shadow:4px 4px 0 var(--ink); padding:14px 16px; }
+  .vb h4{ margin:0 0 6px; font-family:'Bangers',cursive; font-weight:400; font-size:24px; letter-spacing:.05em; }
+  .vb.v1 h4{ color:var(--bleu); } .vb.v2 h4{ color:var(--teal); } .vb.v3 h4{ color:var(--rouge); }
+  .vb ul{ margin:0; padding-left:18px; } .vb li{ margin-bottom:4px; }
+  .vb .fr{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14.5px; }
+  .model{ display:grid; grid-template-columns:150px 1fr; gap:18px; align-items:center; }
+  @media(max-width:560px){ .model{ grid-template-columns:1fr; } }
+  .model p{ font-family:'IBM Plex Mono',monospace; font-weight:600; line-height:1.6; margin:0; }
+  .model b{ color:var(--rouge); }
+  .q .prompt .qpic{ width:96px; display:inline-block; vertical-align:middle; margin-right:10px; }
+
+  /* ===== La Boutique (Spiel) ===== */
+  .game{ position:relative; background:linear-gradient(160deg,#5B2A6E 0%,#26113A 100%); border:4px solid var(--ink); border-radius:22px; box-shadow:7px 7px 0 var(--ink); padding:22px; color:#fff; overflow:hidden; min-height:500px; }
+  .game::before{ content:""; position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.10) 1.5px, transparent 2px); background-size:18px 18px; pointer-events:none; }
+  .game > *{ position:relative; }
+  .g-screen{ text-align:center; } .g-screen[hidden]{ display:none; }
+  .g-title{ font-family:'Bangers',cursive; font-size:clamp(40px,8vw,64px); letter-spacing:.04em; color:var(--gold); text-shadow:3px 3px 0 var(--pink), 6px 6px 0 #000; margin:6px 0 2px; }
+  .g-sub{ font-family:'Bangers',cursive; letter-spacing:.08em; font-size:20px; color:#F1D9FF; margin-bottom:16px; }
+  .g-rules{ list-style:none; padding:0; margin:0 auto 18px; max-width:580px; text-align:left; }
+  .g-rules li{ background:rgba(255,255,255,.08); border:2px solid rgba(255,255,255,.25); border-radius:12px; padding:9px 12px; margin-bottom:8px; font-weight:700; font-size:16px; }
+  .g-ico{ display:inline-block; width:28px; }
+  .g-best{ font-family:'Bangers',cursive; letter-spacing:.06em; font-size:19px; color:var(--gold); margin:6px 0 14px; min-height:22px; }
+  .g-btn{ font-family:'Bangers',cursive; font-size:28px; letter-spacing:.06em; background:var(--gold); color:var(--ink); border:4px solid #000; border-radius:16px; padding:8px 34px; cursor:pointer; box-shadow:5px 5px 0 #000; transition:transform .1s, box-shadow .1s; }
+  .g-btn:hover{ transform:translate(-2px,-2px); box-shadow:7px 7px 0 #000; }
+  .g-btn:active{ transform:translate(3px,3px); box-shadow:1px 1px 0 #000; }
+  .g-btn.small{ font-size:22px; padding:5px 24px; }
+  .g-hud{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .g-lives{ font-size:26px; letter-spacing:2px; min-width:110px; } .g-lives .lost{ filter:grayscale(1); opacity:.3; }
+  .g-combo{ flex:1; text-align:center; font-family:'Bangers',cursive; font-size:24px; letter-spacing:.06em; color:var(--orange); text-shadow:2px 2px 0 #000; }
+  .g-combo.hot{ animation:pulse .6s ease infinite alternate; }
+  @keyframes pulse{ from{transform:scale(1);} to{transform:scale(1.12);} }
+  .g-score{ font-family:'Bangers',cursive; font-size:32px; letter-spacing:.04em; background:#fff; color:var(--ink); border:3px solid #000; border-radius:12px; padding:0 14px; box-shadow:3px 3px 0 #000; white-space:nowrap; }
+  .g-track{ display:flex; align-items:center; margin:4px 4px 16px; }
+  .g-st{ display:flex; flex-direction:column; align-items:center; font-size:12px; font-weight:700; color:#C9A9DD; width:58px; flex:none; }
+  .g-st .dot{ width:34px; height:34px; border-radius:50%; border:3px solid #C9A9DD; display:flex; align-items:center; justify-content:center; font-family:'Bangers',cursive; font-size:17px; background:#3A1C4F; margin-bottom:3px; }
+  .g-st.done .dot{ background:var(--teal); border-color:#fff; color:#fff; }
+  .g-st.now .dot{ background:var(--gold); border-color:#fff; color:var(--ink); transform:scale(1.18); box-shadow:0 0 0 4px rgba(255,201,61,.35); }
+  .g-st.done, .g-st.now{ color:#fff; }
+  .g-line{ flex:1; height:6px; background:#4E2B66; border-radius:3px; margin:0 2px 18px; overflow:hidden; }
+  .g-line i{ display:block; height:100%; width:0; background:var(--teal); transition:width .4s; }
+  .g-qcard{ background:#fff; color:var(--ink); border:4px solid #000; border-radius:18px; padding:16px 18px; box-shadow:5px 5px 0 #000; }
+  .g-qnum{ font-family:'Bangers',cursive; letter-spacing:.06em; font-size:17px; color:var(--ink-soft); }
+  .g-timer{ height:12px; background:#E7EBF7; border:2px solid var(--ink); border-radius:8px; overflow:hidden; margin:6px 0 12px; }
+  .g-timer-fill{ height:100%; width:100%; background:linear-gradient(90deg,var(--rouge),var(--gold),var(--teal)); background-size:300% 100%; background-position:100% 0; }
+  .g-client{ display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
+  .g-face{ font-size:44px; line-height:1; flex:none; }
+  .g-bub{ position:relative; background:var(--purple-bg); border:3px solid var(--ink); border-radius:14px; padding:9px 13px; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:clamp(16px,3.2vw,19px); line-height:1.4; flex:1; text-align:left; }
+  .g-bub::before{ content:""; position:absolute; left:-11px; top:14px; width:16px; height:16px; background:var(--purple-bg); border-left:3px solid var(--ink); border-bottom:3px solid var(--ink); transform:rotate(45deg); }
+  .g-showpic{ width:130px; margin:0 auto 10px; background:var(--bg); border:3px solid var(--ink); border-radius:16px; padding:8px; }
+  .g-opts{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; }
+  .g-opts.pics{ grid-template-columns:repeat(3,1fr); }
+  .g-opt{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:17px; background:var(--blue-bg); color:var(--ink); border:3px solid var(--ink); border-radius:12px; padding:12px 10px; cursor:pointer; box-shadow:3px 3px 0 var(--ink); transition:transform .08s; }
+  .g-opts.pics .g-opt{ background:#fff; padding:6px; }
+  .g-opts.pics .g-opt svg{ width:100%; max-width:110px; height:auto; display:block; margin:0 auto; }
+  .g-opt:hover:not(:disabled){ transform:translate(-1px,-1px); background:var(--gold-bg); }
+  .g-opt:disabled{ cursor:default; }
+  .g-opt.ok{ background:var(--teal) !important; color:#fff; }
+  .g-opt.no{ background:var(--rouge) !important; color:#fff; animation:shake .35s; }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+  .g-fb{ margin-top:12px; font-weight:700; font-size:16px; padding:10px 12px; border-radius:10px; border:2px solid var(--ink); text-align:left; }
+  .g-fb.ok{ background:var(--teal-bg); } .g-fb.no{ background:var(--red-bg); }
+  .g-next-row{ text-align:right; margin-top:10px; }
+  .g-pop{ position:absolute; left:50%; top:40%; transform:translate(-50%,-50%); font-family:'Bangers',cursive; font-size:44px; letter-spacing:.05em; color:var(--gold); text-shadow:3px 3px 0 #000; pointer-events:none; opacity:0; white-space:nowrap; z-index:4; }
+  .g-pop.show{ animation:popup 1s ease forwards; }
+  @keyframes popup{ 0%{opacity:0; transform:translate(-50%,-30%) scale(.6);} 25%{opacity:1; transform:translate(-50%,-50%) scale(1.1);} 100%{opacity:0; transform:translate(-50%,-110%) scale(1);} }
+  .g-banner{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(38,17,58,.9); z-index:5; font-family:'Bangers',cursive; text-align:center; animation:pop .25s ease; }
+  .g-banner[hidden]{ display:none; }
+  .g-banner .lv{ font-size:24px; letter-spacing:.1em; color:#F1D9FF; }
+  .g-banner .city{ font-size:clamp(46px,10vw,76px); color:var(--gold); text-shadow:3px 3px 0 var(--pink),6px 6px 0 #000; }
+  .g-banner .em{ font-size:56px; }
+  .g-rank{ font-family:'Bangers',cursive; font-size:30px; letter-spacing:.05em; color:#fff; margin-bottom:4px; }
+  .g-stars{ font-size:44px; letter-spacing:6px; margin-bottom:10px; } .g-stars .off{ filter:grayscale(1); opacity:.3; }
+  .g-stats{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+  .g-stats div{ background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.3); border-radius:12px; padding:8px 14px; font-weight:700; }
+  .g-stats b{ display:block; font-family:'Bangers',cursive; font-size:28px; color:var(--gold); letter-spacing:.04em; font-weight:400; }
+  .g-tips{ background:#fff; color:var(--ink); border:3px solid #000; border-radius:14px; padding:12px 16px; margin:8px auto 18px; max-width:560px; text-align:left; font-weight:700; }
+  .g-tips:empty{ display:none; }
+  .g-tips a{ color:var(--bleu); text-decoration-color:var(--rouge); text-decoration-thickness:3px; }
+  .g-confetti{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:6; }
+  .g-confetti i{ position:absolute; top:-12px; width:10px; height:14px; border-radius:2px; animation:fall linear forwards; }
+  @keyframes fall{ to{ transform:translateY(600px) rotate(720deg); opacity:.8; } }
+  @media(max-width:560px){ .game{ padding:16px 12px; } .g-st{ width:44px; font-size:10px; } .g-st .dot{ width:28px; height:28px; font-size:14px; } .g-lives{ font-size:21px; min-width:84px; } .g-score{ font-size:24px; } .g-face{ font-size:34px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home-link" href="index.html">← Accueil</a>
+
+  <div class="hero">
+    <div class="bubble">J'adore ton pull !</div>
+    <div class="eyebrow">Vocabulaire · Unité</div>
+    <h1>Les vêtements</h1>
+    <p>Kleidung, Farben und Personen beschreiben: Lerne die Wörter, probier die Farben aus und eröffne deine eigene Boutique!</p>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="woerter">Die Wörter</button>
+    <button class="tab-btn" data-tab="farben">Die Farben</button>
+    <button class="tab-btn" data-tab="beschreiben">Beschreiben</button>
+    <button class="tab-btn" data-tab="uebung">Üben</button>
+    <button class="tab-btn" data-tab="spiel">La Boutique 🎮</button>
+  </nav>
+
+  <!-- ===================== WÖRTER ===================== -->
+  <section class="panel active" id="woerter">
+    <h2 class="section-head">Les vêtements</h2>
+    <p class="section-lead">Tippe auf 🔊, dann hörst du das Wort. Lern die Wörter immer mit Artikel!</p>
+
+    <div class="legend"><span class="lm">männlich (le / un)</span><span class="lf">weiblich (la / une)</span><span class="lp">Plural (les / des)</span></div>
+
+    <div class="word-tools">
+      <button class="btn-big" id="hideWords" type="button">Wörter verstecken</button>
+      <div class="hint">Teste dich: Verstecke die Wörter, sag sie laut und tippe dann auf die Karte.</div>
+    </div>
+    <div class="wgrid" id="wgrid"></div>
+
+    <div class="rule-box" style="margin-top:24px;"><b>Achtung, Falle:</b> <i>la chemise</i> ist das Hemd, <i>le chemisier</i> ist die Bluse. Und <i>la veste</i> ist die Jacke, nicht die Weste!</div>
+  </section>
+
+  <!-- ===================== FARBEN ===================== -->
+  <section class="panel" id="farben">
+    <h2 class="section-head">Les couleurs</h2>
+    <p class="section-lead">Farben sind Adjektive. Sie stehen <b>hinter</b> dem Nomen und passen sich an: un pull <b>vert</b>, une jupe <b>verte</b>.</p>
+
+    <div class="cgrid" id="cgrid"></div>
+
+    <div class="sheet-grid" style="margin-top:22px; margin-bottom:22px;">
+      <div class="card">
+        <h3 class="sheet-title">So passt sich die Farbe an</h3>
+        <table class="mini">
+          <tr><th></th><th>männlich</th><th>weiblich</th></tr>
+          <tr><td>meist + e</td><td>un sac vert</td><td>une robe vert<b>e</b></td></tr>
+          <tr><td>schon mit -e</td><td>un sac rouge</td><td>une robe rouge</td></tr>
+          <tr><td>besonders</td><td>un sac blanc</td><td>une robe blanc<b>he</b></td></tr>
+          <tr><td>besonders</td><td>un sac violet</td><td>une robe violet<b>te</b></td></tr>
+          <tr><td>nie anders</td><td>un sac marron</td><td>une robe marron</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="sheet-title">Und im Plural?</h3>
+        <ul class="rules-list">
+          <li><b>+ s</b>: des baskets blanche<b>s</b>, des pulls bleu<b>s</b></li>
+          <li><b>gris</b> hat schon ein s: des pulls gris</li>
+          <li><b>marron</b> und <b>orange</b> bleiben immer gleich: des bottes marron</li>
+          <li>Die Farbe steht <b>hinter</b> dem Nomen: une jupe noire (nicht: une noire jupe)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Das Farb-Labor <span class="tag">klick!</span></h3>
+      <div class="lab">
+        <div class="lab-pic" id="labPic"></div>
+        <div>
+          <div class="lab-label">1. Wähle ein Kleidungsstück</div>
+          <div class="pickrow" id="labItems"></div>
+          <div class="lab-label">2. Wähle eine Farbe</div>
+          <div class="pickrow" id="labColors"></div>
+          <div class="lab-out" id="labOut"></div>
+          <div class="lab-note" id="labNote"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== BESCHREIBEN ===================== -->
+  <section class="panel" id="beschreiben">
+    <h2 class="section-head">Décrire quelqu'un</h2>
+    <p class="section-lead">Mit drei Verben kannst du jemanden beschreiben: être, avoir und porter.</p>
+
+    <div class="desc-grid">
+      <div class="vb v1">
+        <h4>être (sein)</h4>
+        <ul>
+          <li class="fr">C'est un homme / une femme.</li>
+          <li class="fr">C'est un garçon / une fille.</li>
+          <li class="fr">Il est grand. Elle est grande.</li>
+          <li class="fr">Il/Elle est drôle, cool, sympa, bizarre, intéressant(e), petit(e).</li>
+        </ul>
+      </div>
+      <div class="vb v2">
+        <h4>avoir (haben)</h4>
+        <ul>
+          <li class="fr">Il/Elle a les cheveux longs / courts.</li>
+          <li class="fr">Il/Elle a les cheveux bruns, blonds, roux.</li>
+          <li class="fr">Il/Elle a les yeux bleus, verts, marron.</li>
+          <li class="fr">Il/Elle a un look cool / l'air sympa.</li>
+        </ul>
+      </div>
+      <div class="vb v3">
+        <h4>porter (tragen)</h4>
+        <ul>
+          <li class="fr">Il/Elle porte un pantalon noir.</li>
+          <li class="fr">Il/Elle porte une veste rouge.</li>
+          <li class="fr">Il/Elle porte des lunettes.</li>
+          <li class="fr">je porte · tu portes · il porte · nous portons · vous portez · ils portent</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rule-box" style="margin-top:0; margin-bottom:22px;"><b>Merke:</b> <i>les cheveux</i> und <i>les yeux</i> sind männlich und Plural. Deshalb: les cheveux long<b>s</b>, les yeux bleu<b>s</b>. Aber: les yeux <b>marron</b> (marron bleibt immer gleich).</div>
+
+    <div class="card">
+      <h3>Ein Beispiel</h3>
+      <div class="model">
+        <div id="modelPic"></div>
+        <p>Voilà Léa. C'est une fille. Elle <b>est</b> grande et très sympa. Elle <b>a</b> les cheveux longs et blonds et les yeux verts. Aujourd'hui, elle <b>porte</b> une jupe bleue, un pull blanc et des baskets rouges. Elle a un look cool ! <button class="say" type="button" data-say="Voilà Léa. C'est une fille. Elle est grande et très sympa. Elle a les cheveux longs et blonds et les yeux verts. Aujourd'hui, elle porte une jupe bleue, un pull blanc et des baskets rouges. Elle a un look cool !">🔊</button></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ÜBEN ===================== -->
+  <section class="panel" id="uebung">
+    <h2 class="section-head">Üben</h2>
+    <p class="section-lead">Such dir eine Übung aus. Bei jedem Neustart kommen neue Aufgaben.</p>
+
+    <div class="subnav-group">
+      <div class="subnav">
+        <button class="subnav-btn active c-a" data-target="u-vok" type="button">Was ist das?</button>
+        <button class="subnav-btn c-b" data-target="u-schreib" type="button">Wörter schreiben</button>
+        <button class="subnav-btn c-c" data-target="u-genre" type="button">un · une · des</button>
+        <button class="subnav-btn c-reg" data-target="u-farbe" type="button">Farben anpassen</button>
+        <button class="subnav-btn c-irr" data-target="u-desc" type="button">Beschreiben</button>
+      </div>
+
+      <div class="subpanel active" id="u-vok">
+        <div class="rule-box" style="margin-top:0;"><b>Das übst du:</b> Erkennst du das Kleidungsstück? Achte auch auf den Artikel.</div>
+        <div class="quiz" data-gen="vok"></div>
+      </div>
+      <div class="subpanel" id="u-schreib">
+        <div class="rule-box" style="margin-top:0;"><b>Das übst du:</b> Schreib das Wort mit Artikel: le, la, l' oder les. Akzente musst du nicht tippen.</div>
+        <div class="quiz" data-gen="schreib"></div>
+      </div>
+      <div class="subpanel" id="u-genre">
+        <div class="rule-box" style="margin-top:0;"><b>Das übst du:</b> le → <b>un</b>, la → <b>une</b>, les → <b>des</b>.</div>
+        <div class="quiz" data-gen="genre"></div>
+      </div>
+      <div class="subpanel" id="u-farbe">
+        <div class="rule-box" style="margin-top:0;"><b>Frag dich:</b> Ist das Nomen männlich oder weiblich? Einzahl oder Plural? Dann passt du die Farbe an.</div>
+        <div class="quiz" data-gen="farbe"></div>
+      </div>
+      <div class="subpanel" id="u-desc">
+        <div class="rule-box" style="margin-top:0;"><b>Das übst du:</b> Mit être, avoir und porter jemanden beschreiben.</div>
+        <div class="quiz" data-gen="desc"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SPIEL ===================== -->
+  <section class="panel" id="spiel">
+    <h2 class="section-head">La Boutique</h2>
+    <p class="section-lead">Du arbeitest eine Woche lang in einer Boutique in Paris. Bediene die Kunden richtig und verdiene so viel Geld wie möglich!</p>
+
+    <div class="game" id="game">
+      <div class="g-screen" id="gStart">
+        <div class="g-title">La Boutique</div>
+        <div class="g-sub">5 Tage · 15 Kunden · 3 Leben</div>
+        <ul class="g-rules">
+          <li><span class="g-ico">🛍️</span> Ein Kunde sagt dir, was er möchte. Gib ihm das <b>richtige Teil in der richtigen Farbe</b>!</li>
+          <li><span class="g-ico">💬</span> Manchmal fragt ein Kunde: „Qu'est-ce que c'est ?“ Dann wählst du den <b>richtigen Satz</b>.</li>
+          <li><span class="g-ico">❤️</span> Du hast <b>3 Leben</b>. Nach 5 Richtigen in Folge bekommst du eins zurück.</li>
+          <li><span class="g-ico">⚡</span> Schnell antworten bringt <b>Trinkgeld</b>, eine Serie bringt einen <b>Combo</b> (×2, ×3).</li>
+        </ul>
+        <div class="g-best" id="gBestStart"></div>
+        <button class="g-btn" id="gGo" type="button">Ouvrir la boutique !</button>
+      </div>
+
+      <div class="g-screen" id="gPlay" hidden>
+        <div class="g-hud">
+          <div class="g-lives" id="gLives"></div>
+          <div class="g-combo" id="gCombo"></div>
+          <div class="g-score"><span id="gScore">0</span> €</div>
+        </div>
+        <div class="g-track" id="gTrack"></div>
+        <div class="g-qcard">
+          <div class="g-qnum" id="gQnum"></div>
+          <div class="g-timer"><div class="g-timer-fill" id="gTimer"></div></div>
+          <div id="gQ"></div>
+          <div class="g-opts" id="gOpts"></div>
+          <div class="g-fb" id="gFb" hidden></div>
+          <div class="g-next-row"><button class="g-btn small" id="gNext" type="button" hidden>Weiter ›</button></div>
+        </div>
+        <div class="g-pop" id="gPop"></div>
+      </div>
+
+      <div class="g-banner" id="gBanner" hidden></div>
+
+      <div class="g-screen" id="gEnd" hidden>
+        <div class="g-title" id="gEndTitle"></div>
+        <div class="g-rank" id="gRank"></div>
+        <div class="g-stars" id="gStars"></div>
+        <div class="g-stats" id="gStats"></div>
+        <div class="g-best" id="gBestEnd"></div>
+        <div class="g-tips" id="gTips"></div>
+        <button class="g-btn" id="gAgain" type="button">Nochmal spielen</button>
+      </div>
+      <div class="g-confetti" id="gConfetti"></div>
+    </div>
+  </section>
+
+  <footer class="foot">Horlacher · SJ 2026/27</footer>
+</div>
+
+<script src="engine.js"></script>
+<script>
+// ===================== DATEN =====================
+const ITEMS = [
+  { id:'tshirt',    w:'tee-shirt',          g:'m', de:'das T-Shirt',     c:'bleu' },
+  { id:'pull',      w:'pull',               g:'m', de:'der Pullover',    c:'rouge' },
+  { id:'chemise',   w:'chemise',            g:'f', de:'das Hemd',        c:'blanc' },
+  { id:'chemisier', w:'chemisier',          g:'m', de:'die Bluse',       c:'rose' },
+  { id:'veste',     w:'veste',              g:'f', de:'die Jacke',       c:'vert' },
+  { id:'anorak',    w:'anorak',             g:'m', de:'der Anorak',      c:'bleu' },
+  { id:'robe',      w:'robe',               g:'f', de:'das Kleid',       c:'orange' },
+  { id:'jupe',      w:'jupe',               g:'f', de:'der Rock',        c:'violet' },
+  { id:'pantalon',  w:'pantalon',           g:'m', de:'die Hose',        c:'vert' },
+  { id:'jean',      w:'jean',               g:'m', de:'die Jeans',       c:'bleu', only:['bleu','noir','blanc','gris'] },
+  { id:'casquette', w:'casquette',          g:'f', de:'die Kappe',       c:'bleu' },
+  { id:'bonnet',    w:'bonnet',             g:'m', de:'die Mütze',       c:'rouge' },
+  { id:'sac',       w:'sac',                g:'m', de:'die Tasche',      c:'marron' },
+  { id:'ceinture',  w:'ceinture',           g:'f', de:'der Gürtel',      c:'marron' },
+  { id:'baskets',   w:'baskets',            g:'f', pl:true, de:'die Turnschuhe', c:'blanc' },
+  { id:'bottes',    w:'bottes',             g:'f', pl:true, de:'die Stiefel',    c:'noir' },
+  { id:'chaussures',w:'chaussures',         g:'f', pl:true, de:'die Schuhe',     c:'marron' },
+  { id:'lunettes',  w:'lunettes de soleil', g:'f', pl:true, de:'die Sonnenbrille', c:'rose' }
+];
+const COLORS = {
+  rouge:  { hex:'#E63946', f:['rouge','rouge','rouges','rouges'], de:'rot' },
+  bleu:   { hex:'#2F6FDB', f:['bleu','bleue','bleus','bleues'], de:'blau' },
+  jaune:  { hex:'#FFD23F', f:['jaune','jaune','jaunes','jaunes'], de:'gelb' },
+  vert:   { hex:'#3BB273', f:['vert','verte','verts','vertes'], de:'grün' },
+  orange: { hex:'#FF8A3D', f:['orange','orange','orange','orange'], de:'orange' },
+  violet: { hex:'#8E44AD', f:['violet','violette','violets','violettes'], de:'lila' },
+  rose:   { hex:'#FF8FC2', f:['rose','rose','roses','roses'], de:'rosa' },
+  noir:   { hex:'#2B2B2B', f:['noir','noire','noirs','noires'], de:'schwarz' },
+  blanc:  { hex:'#FFFFFF', f:['blanc','blanche','blancs','blanches'], de:'weiß' },
+  gris:   { hex:'#9AA0A6', f:['gris','grise','gris','grises'], de:'grau' },
+  marron: { hex:'#8B5A2B', f:['marron','marron','marron','marron'], de:'braun' },
+  beige:  { hex:'#E8D3A8', f:['beige','beige','beiges','beiges'], de:'beige' }
+};
+const CKEYS = Object.keys(COLORS);
+const byId = id => ITEMS.find(i=>i.id===id);
+const isVowel = w => /^[aeiouhéè]/i.test(w);
+const defArt = it => it.pl ? 'les ' : (isVowel(it.w) ? "l'" : (it.g==='m' ? 'le ' : 'la '));
+const indArt = it => it.pl ? 'des ' : (it.g==='m' ? 'un ' : 'une ');
+const withDef = it => defArt(it) + it.w;
+const withInd = it => indArt(it) + it.w;
+const cForm = (c, it) => COLORS[c].f[(it.g==='f'?1:0) + (it.pl?2:0)];
+const phrase = (it, c) => withInd(it) + ' ' + cForm(c, it);
+const colorsFor = it => it.only || CKEYS;
+function rnd(a){ return a[Math.floor(Math.random()*a.length)]; }
+function mix(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+// ===================== VORLESEN =====================
+function say(text){
+  try{
+    if(!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'fr-FR'; u.rate = .9;
+    const v = speechSynthesis.getVoices().find(v=>/^fr/i.test(v.lang)); if(v) u.voice = v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-say]'); if(b){ e.stopPropagation(); say(b.dataset.say); }
+});
+
+// ===================== ZEICHNUNGEN =====================
+const INK = '#14213D', DET = 'rgba(20,33,61,.55)';
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1),16); let r=n>>16, g=(n>>8)&255, b=n&255;
+  r=Math.max(0,Math.min(255,r+amt)); g=Math.max(0,Math.min(255,g+amt)); b=Math.max(0,Math.min(255,b+amt));
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+function body(id, F, D){
+  const st = `stroke="${INK}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"`;
+  const dt = `fill="none" stroke="${D}" stroke-width="2.4" stroke-linecap="round"`;
+  const longSleeve = `M36 16 L22 21 Q13 25 12 40 L8 80 L21 82 L26 47 L26 88 L74 88 L74 47 L79 82 L92 80 L88 40 Q87 25 78 21 L64 16 Q50 27 36 16 Z`;
+  const shoe = `M8 70 L10 50 Q20 49 28 42 L42 41 Q50 53 68 56 Q90 59 92 70 Z`;
+  const sole = `M6 70 H94 V78 Q50 84 6 78 Z`;
+  switch(id){
+    case 'tshirt': return `<path d="M35 16 L18 23 L7 40 L20 48 L26 42 L26 88 L74 88 L74 42 L80 48 L93 40 L82 23 L65 16 Q50 28 35 16 Z" fill="${F}" ${st}/><path d="M36 17 Q50 30 64 17" ${dt}/>`;
+    case 'pull': return `<path d="${longSleeve}" fill="${F}" ${st}/><path d="M36 17 Q50 30 64 17 M28 81 H72 M10 74 L22 76 M90 74 L78 76" ${dt}/><path d="M34 84 V88 M42 84 V88 M50 84 V88 M58 84 V88 M66 84 V88" ${dt}/>`;
+    case 'chemise': return `<path d="${longSleeve}" fill="${F}" ${st}/><path d="M50 28 V88" ${dt}/><path d="M36 15 L50 29 L42 36 Z M64 15 L50 29 L58 36 Z" fill="${F}" ${st}/><circle cx="50" cy="44" r="2" fill="${D}"/><circle cx="50" cy="56" r="2" fill="${D}"/><circle cx="50" cy="68" r="2" fill="${D}"/><circle cx="50" cy="80" r="2" fill="${D}"/>`;
+    case 'chemisier': return `<path d="M36 16 L22 21 Q12 26 11 42 Q9 62 12 78 Q16 82 22 80 Q24 64 26 50 L26 88 L74 88 L74 50 Q76 64 78 80 Q84 82 88 78 Q91 62 89 42 Q88 26 78 21 L64 16 Q50 27 36 16 Z" fill="${F}" ${st}/><path d="M12 74 Q17 77 22 75 M88 74 Q83 77 78 75" ${dt}/><path d="M50 26 Q36 18 34 30 Q38 38 50 28 Q62 38 66 30 Q64 18 50 26 Z" fill="${F}" ${st}/><path d="M48 29 L40 54 M52 29 L58 56" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+    case 'veste': return `<path d="${longSleeve}" fill="${F}" ${st}/><path d="M50 26 V88" fill="none" stroke="${INK}" stroke-width="2.6"/><path d="M36 16 L44 34 L50 26 M64 16 L56 34 L50 26" fill="none" stroke="${INK}" stroke-width="2.8" stroke-linejoin="round"/><path d="M32 66 H43 M57 66 H68" ${dt}/><path d="M26 84 H74" ${dt}/>`;
+    case 'anorak': return `<path d="M32 22 Q30 6 50 6 Q70 6 68 22" fill="${shade(F.startsWith('#')?F:'#888888',-25)}" ${st}/><path d="M34 18 L20 24 Q10 30 10 46 L8 82 L22 84 L27 50 L26 90 L74 90 L73 50 L78 84 L92 82 L90 46 Q90 30 80 24 L66 18 Q50 26 34 18 Z" fill="${F}" ${st}/><path d="M27 40 H73 M27 54 H73 M27 68 H73 M27 82 H73 M10 58 L25 60 M90 58 L75 60" ${dt}/><path d="M50 24 V90" fill="none" stroke="${INK}" stroke-width="2.6"/>`;
+    case 'robe': return `<path d="M38 8 L44 8 L50 18 L56 8 L62 8 L64 34 Q60 40 62 44 L86 90 L14 90 L38 44 Q40 40 36 34 Z" fill="${F}" ${st}/><path d="M37 43 Q50 47 63 43" ${dt}/><path d="M40 62 L34 88 M60 62 L66 88 M50 60 V88" ${dt}/>`;
+    case 'jupe': return `<path d="M30 22 L70 22 L72 31 L90 80 Q50 88 10 80 L28 31 Z" fill="${F}" ${st}/><path d="M28 31 H72" fill="none" stroke="${INK}" stroke-width="2.8"/><path d="M38 31 L30 82 M50 31 V85 M62 31 L70 82" ${dt}/>`;
+    case 'pantalon': return `<path d="M27 8 L73 8 L78 92 L57 92 L50 36 L43 92 L22 92 Z" fill="${F}" ${st}/><path d="M27 17 H73" fill="none" stroke="${INK}" stroke-width="2.8"/><path d="M50 17 V34 M36 24 L38 60 M64 24 L62 60" ${dt}/>`;
+    case 'jean': return `<path d="M27 8 L73 8 L78 92 L57 92 L50 36 L43 92 L22 92 Z" fill="${F}" ${st}/><path d="M27 17 H73" fill="none" stroke="${INK}" stroke-width="2.8"/><path d="M50 17 V34 M30 18 Q34 30 44 26 M70 18 Q66 30 56 26" ${dt}/><path d="M24 84 H42 M58 84 H76" fill="none" stroke="#FFC93D" stroke-width="2" stroke-dasharray="3 3"/><circle cx="50" cy="13" r="2" fill="#FFC93D" stroke="${INK}" stroke-width="1"/>`;
+    case 'casquette': return `<path d="M64 60 Q90 58 97 66 Q90 74 60 68 Z" fill="${shade(F.startsWith('#')?F:'#888888',-30)}" ${st}/><path d="M18 64 Q16 26 50 24 Q82 24 82 62 Q50 70 18 64 Z" fill="${F}" ${st}/><path d="M50 25 Q44 44 46 66 M50 25 Q64 42 66 64" ${dt}/><circle cx="50" cy="24" r="4" fill="${F}" stroke="${INK}" stroke-width="2.5"/>`;
+    case 'bonnet': return `<path d="M24 66 Q22 28 50 28 Q78 28 76 66 Z" fill="${F}" ${st}/><rect x="18" y="62" width="64" height="20" rx="6" fill="${shade(F.startsWith('#')?F:'#888888',-25)}" ${st}/><path d="M28 64 V80 M38 64 V80 M50 64 V80 M62 64 V80 M72 64 V80" ${dt}/><circle cx="50" cy="22" r="10" fill="${F}" ${st}/>`;
+    case 'sac': return `<path d="M34 44 Q34 14 50 14 Q66 14 66 44" fill="none" stroke="${INK}" stroke-width="8" stroke-linecap="round"/><path d="M34 44 Q34 14 50 14 Q66 14 66 44" fill="none" stroke="${F}" stroke-width="3.5" stroke-linecap="round"/><path d="M16 42 L84 42 L76 90 L24 90 Z" fill="${F}" ${st}/><path d="M18 56 H82" ${dt}/><rect x="44" y="52" width="12" height="9" rx="2" fill="#FFC93D" stroke="${INK}" stroke-width="2"/>`;
+    case 'ceinture': return `<path d="M6 42 H72 V58 H6 Z" fill="${F}" ${st}/><circle cx="18" cy="50" r="2.4" fill="${D}"/><circle cx="30" cy="50" r="2.4" fill="${D}"/><circle cx="42" cy="50" r="2.4" fill="${D}"/><path d="M10 45 H68 M10 55 H68" fill="none" stroke="${D}" stroke-width="1.6" stroke-dasharray="3 3"/><rect x="70" y="34" width="24" height="32" rx="5" fill="#D9DEE8" ${st}/><rect x="76" y="40" width="12" height="20" rx="3" fill="#fff" stroke="${INK}" stroke-width="2.5"/><path d="M64 50 H86" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+    case 'baskets': {
+      const one = `<path d="${shoe}" fill="${F}" ${st}/><path d="${sole}" fill="#fff" ${st}/><path d="M30 46 L36 54 M36 44 L42 52 M42 44 L47 51" ${dt}/><path d="M58 60 Q70 58 76 66" ${dt}/>`;
+      return `<g transform="translate(6,-14) scale(.86)">${one}</g><g transform="translate(-2,10) scale(.9)">${one}</g>`;
+    }
+    case 'chaussures': {
+      const one = `<path d="M8 68 Q12 52 28 54 Q44 56 56 52 Q86 52 92 68 L92 74 L8 74 Z" fill="${F}" ${st}/><path d="M6 74 H94 V80 H6 Z" fill="${shade(F.startsWith('#')?F:'#888888',-45)}" ${st}/><path d="M40 56 Q48 62 58 54" ${dt}/>`;
+      return `<g transform="translate(8,-14) scale(.85)">${one}</g><g transform="translate(-2,10) scale(.9)">${one}</g>`;
+    }
+    case 'bottes': {
+      const one = `<path d="M36 8 H60 V62 Q80 64 86 76 V84 H36 Z" fill="${F}" ${st}/><path d="M34 84 H88 V90 H34 Z" fill="${shade(F.startsWith('#')?F:'#888888',-45)}" ${st}/><path d="M36 16 H60" ${dt}/>`;
+      return `<g transform="translate(16,-2) scale(.82)">${one}</g><g transform="translate(-10,8) scale(.86)">${one}</g>`;
+    }
+    case 'lunettes': return `<path d="M8 40 L4 30 M92 40 L96 30" fill="none" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/><path d="M10 38 H44 Q46 62 28 64 Q10 64 10 38 Z" fill="${F}" ${st}/><path d="M56 38 H90 Q90 64 72 64 Q54 62 56 38 Z" fill="${F}" ${st}/><path d="M44 42 Q50 36 56 42" fill="none" stroke="${INK}" stroke-width="3.2"/><path d="M18 44 L26 52 M64 44 L72 52" stroke="rgba(255,255,255,.7)" stroke-width="3" stroke-linecap="round"/>`;
+  }
+  return '';
+}
+function icon(id, color){
+  const F = COLORS[color] ? COLORS[color].hex : color;
+  const D = (color==='noir') ? 'rgba(255,255,255,.55)' : DET;
+  return `<svg class="ico" viewBox="0 0 100 100" role="img" aria-label="${byId(id).w}">${body(id, F, D)}</svg>`;
+}
+
+// ===================== WORTKARTEN =====================
+const wgrid = document.getElementById('wgrid');
+wgrid.innerHTML = ITEMS.map(it=>{
+  const cls = it.pl ? 'g-p' : (it.g==='m' ? 'g-m' : 'g-f');
+  return `<div class="wcard ${cls}"><div class="pic">${icon(it.id, it.c)}</div>
+    <div class="fr"><span class="art">${defArt(it)}</span>${it.w}</div>
+    <div class="de">${it.de}</div>
+    <button class="say" type="button" data-say="${withDef(it)}" aria-label="vorlesen">🔊</button></div>`;
+}).join('');
+wgrid.querySelectorAll('.wcard').forEach(c=>c.addEventListener('click', ()=>c.classList.toggle('open')));
+const hideBtn = document.getElementById('hideWords');
+hideBtn.addEventListener('click', ()=>{
+  const on = wgrid.classList.toggle('hide-words');
+  wgrid.querySelectorAll('.wcard').forEach(c=>c.classList.remove('open'));
+  hideBtn.textContent = on ? 'Wörter zeigen' : 'Wörter verstecken';
+});
+
+// ===================== FARBEN =====================
+document.getElementById('cgrid').innerHTML = CKEYS.map(k=>{
+  const c = COLORS[k], same = c.f[0]===c.f[1];
+  return `<div class="cchip"><span class="dot" style="background:${c.hex}"></span>
+    <span class="nm">${same ? c.f[0] : c.f[0]+' / '+c.f[1]}<small>${c.de}</small></span>
+    <button class="say" type="button" data-say="${same ? c.f[0] : c.f[0]+', '+c.f[1]}">🔊</button></div>`;
+}).join('');
+
+let labItem = 'jupe', labColor = 'vert';
+function drawLab(){
+  const it = byId(labItem);
+  if(!colorsFor(it).includes(labColor)) labColor = colorsFor(it)[0];
+  document.getElementById('labPic').innerHTML = icon(labItem, labColor);
+  const adj = cForm(labColor, it);
+  document.getElementById('labOut').innerHTML = `${withInd(it)} <span class="adj">${adj}</span> <button class="say" type="button" data-say="${phrase(it,labColor)}">🔊</button>`;
+  const base = COLORS[labColor].f[0];
+  let note = '';
+  if(adj === base) note = it.g==='f' || it.pl ? `${base} bleibt hier gleich.` : `männlich Einzahl: Grundform ${base}.`;
+  else note = `${it.pl?'Plural':''}${it.pl&&it.g==='f'?' + ':''}${it.g==='f'?'weiblich':''}: ${base} → ${adj}`;
+  document.getElementById('labNote').textContent = note;
+  document.querySelectorAll('#labItems .pk').forEach(b=>b.classList.toggle('on', b.dataset.id===labItem));
+  document.querySelectorAll('#labColors .pk').forEach(b=>{
+    b.classList.toggle('on', b.dataset.c===labColor);
+    b.style.opacity = colorsFor(it).includes(b.dataset.c) ? 1 : .2;
+  });
+}
+document.getElementById('labItems').innerHTML = ITEMS.map(it=>`<button class="pk it" type="button" data-id="${it.id}" title="${withDef(it)}">${icon(it.id, it.c)}</button>`).join('');
+document.getElementById('labColors').innerHTML = CKEYS.map(k=>`<button class="pk cl" type="button" data-c="${k}" title="${k}" style="background:${COLORS[k].hex}"></button>`).join('');
+document.querySelectorAll('#labItems .pk').forEach(b=>b.addEventListener('click', ()=>{ labItem = b.dataset.id; drawLab(); }));
+document.querySelectorAll('#labColors .pk').forEach(b=>b.addEventListener('click', ()=>{ if(colorsFor(byId(labItem)).includes(b.dataset.c)){ labColor = b.dataset.c; drawLab(); } }));
+drawLab();
+
+document.getElementById('modelPic').innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">${icon('pull','blanc')}${icon('jupe','bleu')}<div style="grid-column:span 2;width:60%;margin:0 auto;">${icon('baskets','rouge')}</div></div>`;
+
+// ===================== ÜBUNGEN (Generatoren) =====================
+const pic = (id,c) => `<span class="qpic">${icon(id,c)}</span>`;
+function others(it, n){ return mix(ITEMS.filter(x=>x.id!==it.id && x.w!==it.w)).slice(0,n); }
+const GEN = {
+  vok(){
+    return mix(ITEMS).slice(0,10).map(it=>{
+      const opts = [withDef(it), ...others(it,2).map(withDef)];
+      return { t:'mc', q:pic(it.id,it.c)+'Was ist das?', o:opts, c:0, e:`${withDef(it)} = ${it.de}.` };
+    });
+  },
+  schreib(){
+    return mix(ITEMS).slice(0,10).map(it=>({ t:'fill', q:pic(it.id,it.c)+`(${it.de})`, a:[withDef(it)], e:`${withDef(it)}.` + (it.pl?' Plural: les.':'') }));
+  },
+  genre(){
+    return mix(ITEMS).slice(0,10).map(it=>({ t:'mc', q:`______ ${it.w} (${defArt(it).trim()} ${it.w})`, o:['un','une','des'], c: it.pl?2:(it.g==='m'?0:1), e:`${defArt(it).trim()} → ${indArt(it).trim()}: ${withInd(it)}.` }));
+  },
+  farbe(){
+    const out = [];
+    const pool = mix(ITEMS);
+    for(let i=0;i<10;i++){
+      const it = pool[i];
+      // bevorzugt Farben, die sich verändern
+      const cs = colorsFor(it), changing = cs.filter(c=>cForm(c,it)!==COLORS[c].f[0]);
+      const c = (changing.length && Math.random()<.75) ? rnd(changing) : rnd(cs);
+      const ans = cForm(c,it), base = COLORS[c].f[0];
+      const why = ans===base ? `${base} bleibt hier gleich.` : `${it.g==='f'?'weiblich':''}${it.g==='f'&&it.pl?' + ':''}${it.pl?'Plural':''}: ${base} → ${ans}.`;
+      if(i%2===0) out.push({ t:'fill', q:pic(it.id,c)+`${withInd(it)} ______ (${base})`, a:[ans], e:why });
+      else {
+        const wrong = [...new Set(COLORS[c].f.filter(f=>f!==ans))];
+        const opts = [phrase(it,c), ...wrong.slice(0,2).map(f=>withInd(it)+' '+f)];
+        const wrongArt = (it.pl ? (it.g==='m'?'une ':'un ') : (it.g==='m'?'une ':'un ')) + it.w + ' ' + ans;
+        if(opts.length<3) opts.push(wrongArt);
+        out.push({ t:'mc', q:pic(it.id,c)+'Was ist richtig?', o:[...new Set(opts)].slice(0,3), c:0, e:why });
+      }
+    }
+    return out;
+  },
+  desc(){
+    return mix([
+      { t:'mc', q:"Elle ______ les cheveux longs.", o:["a","est","porte"], c:0, e:"Haare hat man: avoir → elle a." },
+      { t:'mc', q:"Il ______ grand et sympa.", o:["est","a","porte"], c:0, e:"Eigenschaften mit être: il est." },
+      { t:'mc', q:"Elle ______ une robe rouge.", o:["porte","a","est"], c:0, e:"Kleidung trägt man: porter → elle porte." },
+      { t:'mc', q:"Il a les yeux ______.", o:["bleus","bleu","bleues"], c:0, e:"les yeux ist männlich Plural: bleus." },
+      { t:'mc', q:"Elle a les cheveux ______.", o:["blonds","blondes","blond"], c:0, e:"les cheveux ist männlich Plural: blonds." },
+      { t:'mc', q:"Il a les yeux ______.", o:["marron","marrons","marronne"], c:0, e:"marron bleibt immer gleich." },
+      { t:'mc', q:"C'est une fille. Elle est ______.", o:["petite","petit","petits"], c:0, e:"fille ist weiblich: petite." },
+      { t:'fill', q:"Nous ______ des baskets. (porter)", a:["portons"], e:"nous portons." },
+      { t:'fill', q:"Tu ______ un pull gris. (porter)", a:["portes"], e:"tu portes, mit s." },
+      { t:'fill', q:"Il porte une veste ______. (noir)", a:["noire"], e:"veste ist weiblich: noire." },
+      { t:'puz', de:"Sie hat kurze Haare.", w:["Elle","a","les","cheveux","courts"] },
+      { t:'puz', de:"Er trägt eine blaue Jeans.", w:["Il","porte","un","jean","bleu"] }
+    ]).slice(0,10);
+  }
+};
+document.querySelectorAll('.quiz[data-gen]').forEach(el=>{
+  const g = el.dataset.gen;
+  mountQuiz(el, GEN[g](), {manual:true});
+  // Neustart = neue Aufgaben
+  el.addEventListener('click', e=>{
+    if(e.target.classList.contains('rs')){ e.stopImmediatePropagation(); mountQuiz(el, GEN[g](), {manual:true}); }
+  }, true);
+});
+
+// ===================== LA BOUTIQUE (Spiel) =====================
+(function(){
+  const DAYS = [{d:'Lundi',em:'L'},{d:'Mardi',em:'M'},{d:'Mercredi',em:'M'},{d:'Jeudi',em:'J'},{d:'Vendredi',em:'V'}];
+  const DAYS_EM = ['☀️','🌦️','🌈','🍂','🎉'];
+  const FACES = ['👩','👨','👧','👦','👵','👴','🧑','👩‍🦰','👨‍🦱','👱‍♀️','🧔','👩‍🦳'];
+  const PER = 3, TIME = 14000, KEY = 'boutique7a_highscore';
+  const DESC = [
+    { q:"Il ___ les cheveux courts.", o:["a","est","porte"], e:"Haare hat man: il a." },
+    { q:"Elle ___ très sympa !", o:["est","a","porte"], e:"Eigenschaften mit être: elle est." },
+    { q:"Il ___ un anorak bleu.", o:["porte","est","a les"], e:"Kleidung: il porte." },
+    { q:"Elle a les yeux ___.", o:["verts","vertes","vert"], e:"les yeux ist männlich Plural: verts." },
+    { q:"Il a les cheveux ___.", o:["bruns","brunes","brun"], e:"les cheveux ist männlich Plural: bruns." },
+    { q:"Elle a les yeux ___.", o:["marron","marrons","marronnes"], e:"marron bleibt immer gleich." },
+    { q:"Nous ___ des bottes.", o:["portons","portez","portent"], e:"nous portons." },
+    { q:"Ils ___ des casquettes.", o:["portent","porte","portons"], e:"ils portent." },
+    { q:"C'est une femme. Elle est ___.", o:["grande","grand","grands"], e:"femme ist weiblich: grande." },
+    { q:"Tu ___ un look cool !", o:["as","es","portes"], e:"un look haben: tu as." }
+  ];
+  const $ = id => document.getElementById(id);
+  function getBest(){ try{ return parseInt(localStorage.getItem(KEY)) || 0; }catch(e){ return 0; } }
+  function setBest(v){ try{ localStorage.setItem(KEY, v); }catch(e){} }
+  let qs, cur, lives, score, streak, bestStreak, right, errs, t0, raf, answered;
+
+  function farColors(c, n, it){
+    return mix(colorsFor(it).filter(x=>x!==c && !(['blanc','beige'].includes(x)&&['blanc','beige'].includes(c)))).slice(0,n);
+  }
+  function mkPick(){
+    const it = rnd(ITEMS), c = rnd(colorsFor(it));
+    const opts = [{id:it.id,c}];
+    farColors(c,2,it).forEach(cc=>opts.push({id:it.id,c:cc}));
+    mix(ITEMS.filter(x=>x.id!==it.id && colorsFor(x).includes(c))).slice(0,2).forEach(x=>opts.push({id:x.id,c}));
+    const o2 = rnd(ITEMS.filter(x=>x.id!==it.id)); opts.push({id:o2.id, c:rnd(farColors(c,3,o2))||rnd(colorsFor(o2))});
+    const polite = rnd(["Bonjour ! Je voudrais","Bonjour ! Je cherche","Salut ! Je voudrais","Bonjour ! Je voudrais bien"]);
+    return { k:'pick', face:rnd(FACES), say:`${polite} ${phrase(it,c)}, s'il vous plaît.`, opts:mix(opts), ok:`${it.id}|${c}`,
+             e:`${phrase(it,c)} = ${it.de.replace(/^(der|die|das) /,'')} (${COLORS[c].de}).` };
+  }
+  function mkSay(){
+    const it = rnd(ITEMS), c = rnd(colorsFor(it));
+    const right = phrase(it,c), set = new Set([right]);
+    COLORS[c].f.forEach(f=>{ if(set.size<4) set.add(withInd(it)+' '+f); });
+    const wrongArt = (it.pl ? (it.g==='m'?'une ':'un ') : (it.g==='m'?'une ':'un ')) + it.w + ' ' + cForm(c,it);
+    set.add(wrongArt);
+    const oc = rnd(farColors(c,3,it)); if(oc) set.add(phrase(it,oc));
+    const arr = [...set]; const wrong = mix(arr.slice(1)).slice(0,3);
+    return { k:'say', face:rnd(FACES), id:it.id, c, o:[right,...wrong], e: cForm(c,it)===COLORS[c].f[0] ? `${right}: ${COLORS[c].f[0]} bleibt hier gleich.` : `${right}: ${it.g==='f'?'weiblich':'männlich'}${it.pl?', Plural':''} → ${cForm(c,it)}.` };
+  }
+  function mkDesc(d){ return { k:'desc', face:rnd(FACES), q:d.q, o:d.o, e:d.e }; }
+
+  function showBest(){ const b = getBest(); $('gBestStart').textContent = b ? `🏆 Dein Rekord: ${b} €` : ''; }
+  function show(id){ ['gStart','gPlay','gEnd'].forEach(s=>$(s).hidden = (s!==id)); }
+  function start(){
+    const ds = mix(DESC);
+    qs = [];
+    for(let d=0; d<5; d++) qs.push(...mix([mkPick(), mkSay(), mkDesc(ds[d])]));
+    cur = 0; lives = 3; score = 0; streak = 0; bestStreak = 0; right = 0; errs = {};
+    $('gScore').textContent = 0; show('gPlay'); drawTrack(); drawLives(); drawCombo();
+    banner(0, render);
+  }
+  function drawTrack(){
+    const lvl = Math.floor(cur/PER);
+    $('gTrack').innerHTML = DAYS.map((s,i)=>{
+      const cls = i < lvl ? 'done' : (i === lvl ? 'now' : '');
+      const st = `<div class="g-st ${cls}"><div class="dot">${s.em}</div>${s.d}</div>`;
+      if(i === DAYS.length-1) return st;
+      const fill = i < lvl ? 100 : (i === lvl ? Math.round((cur%PER)/PER*100) : 0);
+      return st + `<div class="g-line"><i style="width:${fill}%"></i></div>`;
+    }).join('');
+  }
+  function drawLives(){ $('gLives').innerHTML = [0,1,2].map(i=>`<span class="${i<lives?'':'lost'}">❤️</span>`).join(''); }
+  function mult(){ return streak >= 5 ? 3 : (streak >= 3 ? 2 : 1); }
+  function drawCombo(){
+    const c = $('gCombo');
+    if(streak >= 3){ c.textContent = `🔥 Combo ×${mult()}`; c.classList.add('hot'); }
+    else { c.textContent = streak ? `${streak} richtig in Folge` : ''; c.classList.remove('hot'); }
+  }
+  function pop(t){ const p = $('gPop'); p.textContent = t; p.classList.remove('show'); void p.offsetWidth; p.classList.add('show'); }
+  function banner(l, cb){
+    const b = $('gBanner');
+    b.innerHTML = `<div class="lv">Tag ${l+1} von 5</div><div class="em">${DAYS_EM[l]}</div><div class="city">${DAYS[l].d}</div>`;
+    b.hidden = false; setTimeout(()=>{ b.hidden = true; cb(); }, 1300);
+  }
+  function render(){
+    const it = qs[cur]; answered = false; drawTrack();
+    const label = { pick:'Bestellung', say:'Frage', desc:'Plaudern' }[it.k];
+    $('gQnum').textContent = `Kunde ${cur+1} von ${qs.length} · ${label}`;
+    $('gFb').hidden = true; $('gNext').hidden = true;
+    const box = $('gOpts'); box.innerHTML = ''; box.className = 'g-opts' + (it.k==='pick' ? ' pics' : '');
+    let html = '';
+    if(it.k==='pick'){
+      html = `<div class="g-client"><div class="g-face">${it.face}</div><div class="g-bub">${it.say} <button class="say" type="button" data-say="${it.say}">🔊</button></div></div>`;
+      it.opts.forEach(o=>{
+        const b = document.createElement('button'); b.type='button'; b.className='g-opt'; b.dataset.key = `${o.id}|${o.c}`;
+        b.innerHTML = icon(o.id, o.c); b.setAttribute('aria-label', phrase(byId(o.id), o.c));
+        b.addEventListener('click', ()=>answer(b.dataset.key===it.ok, b)); box.appendChild(b);
+      });
+    } else if(it.k==='say'){
+      html = `<div class="g-client"><div class="g-face">${it.face}</div><div class="g-bub">Qu'est-ce que c'est ?</div></div><div class="g-showpic">${icon(it.id,it.c)}</div>`;
+      mix(it.o.map((_,i)=>i)).forEach(i=>{
+        const b = document.createElement('button'); b.type='button'; b.className='g-opt'; b.textContent = it.o[i]; b.dataset.ok = i===0 ? '1' : '';
+        b.addEventListener('click', ()=>answer(i===0, b)); box.appendChild(b);
+      });
+    } else {
+      html = `<div class="g-client"><div class="g-face">${it.face}</div><div class="g-bub">Complète, s'il te plaît : ${it.q.replace('___','______')}</div></div>`;
+      mix(it.o.map((_,i)=>i)).forEach(i=>{
+        const b = document.createElement('button'); b.type='button'; b.className='g-opt'; b.textContent = it.o[i]; b.dataset.ok = i===0 ? '1' : '';
+        b.addEventListener('click', ()=>answer(i===0, b)); box.appendChild(b);
+      });
+    }
+    $('gQ').innerHTML = html;
+    t0 = performance.now(); tick();
+  }
+  function tick(){
+    const left = Math.max(0, 1 - (performance.now()-t0)/TIME);
+    const f = $('gTimer'); f.style.width = (left*100)+'%'; f.style.backgroundPosition = (left*100)+'% 0';
+    if(left > 0 && !answered) raf = requestAnimationFrame(tick);
+  }
+  function answer(ok, btn){
+    if(answered) return; answered = true; cancelAnimationFrame(raf);
+    const it = qs[cur], left = Math.max(0, 1 - (performance.now()-t0)/TIME);
+    document.querySelectorAll('#gOpts .g-opt').forEach(b=>{
+      b.disabled = true;
+      if((it.k==='pick' && b.dataset.key===it.ok) || (it.k!=='pick' && b.dataset.ok)) b.classList.add('ok');
+    });
+    const fb = $('gFb'); fb.hidden = false;
+    if(ok){
+      streak++; right++; bestStreak = Math.max(bestStreak, streak);
+      const tip = Math.round(left*5), pts = (10 + tip) * mult();
+      score += pts; $('gScore').textContent = score;
+      fb.className = 'g-fb ok'; fb.textContent = `✓ Merci ! +${pts} €` + (tip ? ` (⚡ ${tip} € Trinkgeld)` : '') + '. ' + it.e;
+      if(streak === 5 && lives < 3){ lives++; drawLives(); pop('💖 +1 Leben!'); }
+      else if(streak === 3 || streak === 5) pop(`Combo ×${mult()}!`);
+      else pop(left > .6 ? 'Super schnell!' : rnd(['Merci !','Parfait !','Génial !','Top !']));
+      if(it.k==='pick') say(rnd(['Merci beaucoup !','Parfait, merci !','Super, merci !']));
+    } else {
+      btn.classList.add('no'); streak = 0; lives--; errs[it.k] = (errs[it.k]||0)+1; drawLives();
+      const sol = it.k==='pick' ? it.e : `Richtig ist: ${it.o[0]}. ${it.e}`;
+      fb.className = 'g-fb no'; fb.textContent = `✗ ${sol}`;
+    }
+    drawCombo();
+    const nb = $('gNext'); nb.hidden = false;
+    nb.textContent = (lives <= 0 || cur >= qs.length-1) ? 'Zum Ergebnis ›' : 'Weiter ›';
+    nb.focus({preventScroll:true});
+  }
+  function next(){
+    if(lives <= 0 || cur >= qs.length-1){ end(); return; }
+    cur++;
+    if(cur % PER === 0) banner(cur/PER, render); else render();
+  }
+  function end(){
+    const won = lives > 0, old = getBest(), rec = score > old;
+    if(rec) setBest(score);
+    $('gEndTitle').textContent = won ? 'Bon week-end !' : 'Boutique fermée !';
+    const ratio = right / qs.length;
+    $('gRank').textContent = !won ? 'Fast geschafft. Versuch es nochmal!' :
+      ratio === 1 ? '🏆 Styliste de Paris' : ratio >= .8 ? '🥇 Star de la boutique' : ratio >= .6 ? '🥈 Pro de la mode' : '🥉 Stagiaire';
+    const stars = !won ? 0 : ratio === 1 ? 3 : ratio >= .7 ? 2 : 1;
+    $('gStars').innerHTML = [0,1,2].map(i=>`<span class="${i<stars?'':'off'}">⭐</span>`).join('');
+    $('gStats').innerHTML = `<div><b>${score} €</b>verdient</div><div><b>${right} / ${cur+1}</b>richtig</div><div><b>${bestStreak}</b>beste Serie</div>`;
+    $('gBestEnd').textContent = rec ? '🎉 Neuer Rekord!' : (old ? `🏆 Dein Rekord: ${old} €` : '');
+    const TIPS = { pick:['die Wörter','woerter',null], say:['Farben anpassen','uebung','u-farbe'], desc:['Personen beschreiben','uebung','u-desc'] };
+    const ks = Object.keys(errs);
+    $('gTips').innerHTML = ks.length
+      ? '<b>Das kannst du noch üben:</b> ' + ks.map(k=>`<a href="#" data-go="${TIPS[k][1]}" data-sub="${TIPS[k][2]||''}">${TIPS[k][0]}</a>`).join(', ') + '. Klick drauf, dann kommst du direkt dorthin.'
+      : (won ? 'Kein einziger Fehler. Magnifique !' : '');
+    $('gTips').querySelectorAll('[data-go]').forEach(a=>a.addEventListener('click', e=>{
+      e.preventDefault();
+      document.querySelector(`.tab-btn[data-tab="${a.dataset.go}"]`).click();
+      if(a.dataset.sub) document.querySelector(`.subnav-btn[data-target="${a.dataset.sub}"]`).click();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }));
+    show('gEnd');
+    if(won) confetti();
+  }
+  function confetti(){
+    const box = $('gConfetti'); box.innerHTML = '';
+    const cols = ['#0055A4','#FFFFFF','#EF4135','#FFC93D','#FF5C8A','#14A38B'];
+    for(let i=0;i<80;i++){
+      const c = document.createElement('i');
+      c.style.left = Math.random()*100+'%'; c.style.background = cols[i%cols.length];
+      c.style.animationDuration = (1.8+Math.random()*1.8)+'s'; c.style.animationDelay = (Math.random()*.6)+'s';
+      box.appendChild(c);
+    }
+    setTimeout(()=>box.innerHTML = '', 4200);
+  }
+  $('gGo').addEventListener('click', start);
+  $('gAgain').addEventListener('click', ()=>{ showBest(); start(); });
+  $('gNext').addEventListener('click', next);
+  showBest();
+})();
+</script>
+</body>
+</html>
